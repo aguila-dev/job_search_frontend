@@ -11,7 +11,7 @@ const WorkdayPosting = ({ job, baseUrl, appliedJobs, extractJobId }: any) => {
         {job?.title ? job.title : 'title here'}
       </h3>
       <p>{job.locationsText ? job.locationsText : ''}</p>
-      <p>{job.postedOn ? job.postedOn : 'postedOn_missing'}</p>
+      <p>{job.postedOnDate ? job.postedOnDate : job.postedOn}</p>
       <a
         href={`${baseUrl}${job.externalPath}`}
         target='_blank'

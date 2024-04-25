@@ -1,7 +1,7 @@
 const fetchWorkdayLocations = async (company: string): Promise<any> => {
   try {
     const response = await fetch(
-      `http://localhost:8000/api/locations/${company}`,
+      `http://localhost:8000/v1/api/locations/${company}`,
       {
         method: 'GET',
         headers: {
@@ -14,7 +14,7 @@ const fetchWorkdayLocations = async (company: string): Promise<any> => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-
+    console.log('response', response);
     return response.json();
   } catch (error) {
     console.error('Failed to fetch locations: ', error);

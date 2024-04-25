@@ -55,6 +55,28 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* CSS in your main stylesheet or inside <style> tags in your component, if you use styled-components or similar */
+.no-scroll {
+  overflow: hidden;
+  height: 100%; /* Prevent vertical scrolling */
+}
+
+.jobs-list-container {
+  max-height: 75vh; /* Adjust based on your layout */
+  overflow-y: auto; /* Enables scrolling inside the element */
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

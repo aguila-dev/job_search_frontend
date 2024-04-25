@@ -28,9 +28,9 @@ const Home = () => {
   };
 
   return (
-    <div className='w-full min-h-screen flex flex-col items-center justify-start gap-4'>
+    <div className='w-full flex flex-col items-center justify-start gap-4'>
       <h2 className='text-xl font-semibold text-center'>
-        Greenhouse Companies
+        Greenhouse Companies ({jobBackends.length})
       </h2>
       <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
         {jobBackends.map((company, index) => (
@@ -44,7 +44,9 @@ const Home = () => {
           </button>
         ))}
       </div>
-      <h2 className='text-xl font-semibold text-center'>Workday Companies</h2>
+      <h2 className='text-xl font-semibold text-center'>
+        Workday Companies ({workdayJobs.length})
+      </h2>
       <div className='flex flex-wrap gap-4'>
         {workdayJobs.map((company, index) => (
           <button

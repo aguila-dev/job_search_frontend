@@ -9,12 +9,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { workdayJobs } from '../constants/jobUrls';
 import { useAppliedJobs } from '../hooks/useAppliedJobs';
 import { extractWorkdayJobId } from '../utils/extractJobIds';
+import { LoadingSpinner } from '../ui';
 import JobPostingSkeleton from '../ui/JobPostingSkeleton';
 import LocationDropdown from '../components/Dropdown/LocationDropdown';
 
 const WorkdayCompanyJobsList: React.FC = () => {
   const [jobs, setJobs] = useState<any>({});
   const [offset, setOffset] = useState<number>(0);
+  const [totalJobCount, setTotalJobCount] = useState<number>(0);
+  console.log('totalJobCount', totalJobCount);
   const [searchText, setSearchText] = useState<string>('');
   const [tempSearchText, setTempSearchText] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<string>('');
@@ -29,7 +32,18 @@ const WorkdayCompanyJobsList: React.FC = () => {
     extractWorkdayJobId
   );
 
-  // console.log('appliedJobs', appliedJobs);
+  useEffect(() => {
+    if (loading) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
+    // Cleanup function to remove the class when the component unmounts
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [loading]);
 
   useEffect(() => {
     const getWorkdayJobs = async (company: string) => {
@@ -42,11 +56,14 @@ const WorkdayCompanyJobsList: React.FC = () => {
           searchText,
           selectedLocations
         );
-        // console.log('data', data);
+
         if (!data) {
           navigate('/');
           return;
         }
+
+        if (offset === 0) setTotalJobCount(data.total);
+
         if (data.jobPostings) {
           // Sort the job postings based on the 'sortOrder' state
           const sortedJobPostings = [...data.jobPostings].sort((a, b) =>
@@ -97,27 +114,51 @@ const WorkdayCompanyJobsList: React.FC = () => {
   };
 
   return (
-    <div className='px-4 w-full'>
-      <h1>{currentCompany?.title.toUpperCase()}</h1>
-      <div>
-        <div className='flex gap-2'>
+    <div className='px-4 w-full scrollbar-hide'>
+      <h2 className='text-center font-semibold text-2xl'>
+        Job listings for {currentCompany?.title} (
+        {totalJobCount ? (
+          totalJobCount
+        ) : (
+          <LoadingSpinner width='w-6' height='h-6' />
+        )}
+        )
+      </h2>
+      <div className='flex items-center justify-center'>
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 items-center justify-center'>
           <LocationDropdown
             locations={dropdownLocations}
             selectedLocations={selectedLocations}
             onLocationChange={handleLocationChange}
           />
-          <button type='button' onClick={() => setSortOrder('newest')}>
+
+          <button
+            type='button'
+            className='w-40 text-center'
+            onClick={() => setSortOrder('newest')}
+          >
             Sort by Newest
           </button>
-          <button type='button' onClick={() => setSortOrder('oldest')}>
+          <button
+            type='button'
+            className='w-40 text-center'
+            onClick={() => setSortOrder('oldest')}
+          >
             Sort by Oldest
           </button>
-          <button type='button' onClick={() => setSortOrder('')}>
+          <button
+            type='button'
+            className='w-40 text-center'
+            onClick={() => setSortOrder('')}
+          >
             Reset Sort
           </button>
         </div>
       </div>
-      <form onSubmit={handleSearchSubmit} className='w-full flex'>
+      <form
+        onSubmit={handleSearchSubmit}
+        className='w-full max-w-[673px] flex items-center justify-center shadow-md shadow-zinc-500 py-2 rounded-xl mb-2'
+      >
         <input
           type='text'
           value={tempSearchText}
@@ -135,7 +176,7 @@ const WorkdayCompanyJobsList: React.FC = () => {
           Search
         </button>
       </form>
-      <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2'>
+      <ul className='pt-2 jobs-list-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2'>
         {loading
           ? Array.from({ length: 10 }, (_, index) => (
               <li key={index} className='job-posting'>
@@ -164,16 +205,19 @@ const WorkdayCompanyJobsList: React.FC = () => {
               </li>
             ))}
       </ul>
-      <button
-        type='button'
-        onClick={() => setOffset(offset - 20)}
-        disabled={offset === 0}
-      >
-        Previous
-      </button>
-      <button type='button' onClick={() => setOffset(offset + 20)}>
-        Next
-      </button>
+      <section className='py-2 flex w-full justify-center md:gap-4 items-center shadow-lg'>
+        <button
+          type='button'
+          onClick={() => setOffset(offset - 20)}
+          className={`${offset === 0 ? 'hidden' : 'cursor-pointer'}`}
+          disabled={offset === 0}
+        >
+          Previous
+        </button>
+        <button type='button' onClick={() => setOffset(offset + 20)}>
+          Next
+        </button>
+      </section>
     </div>
   );
 };

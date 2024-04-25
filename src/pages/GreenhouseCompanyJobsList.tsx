@@ -6,6 +6,7 @@ import getBackendUrl from '../utils/getBackendUrl';
 import SearchAndSort from '../components/SearchAndSort';
 import JobPostingSkeleton from '../ui/JobPostingSkeleton';
 import downloadAppliedJobDetails from '../utils/downloadJobDetails';
+import { LoadingSpinner } from '../ui';
 
 const GreenhouseCompanyJobsList = () => {
   const { company } = useParams(); // Extract the company name from the URL
@@ -13,29 +14,40 @@ const GreenhouseCompanyJobsList = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  console.log('isError', isError);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const getJobs = async (company: string) => {
       setIsLoading(true);
+      setIsError(false);
       const backendUrl = getBackendUrl(company);
       if (!backendUrl) {
         navigate('/');
         return;
       }
-      const jobsData = await fetchJobs(backendUrl);
-      const appliedJobs = JSON.parse(
-        localStorage.getItem('appliedJobs') || '{}'
-      );
+      try {
+        const jobsData = await fetchJobs(backendUrl);
+        if (!jobsData) {
+          throw new Error('Network response errored out');
+        }
+        const appliedJobs = JSON.parse(
+          localStorage.getItem('appliedJobs') || '{}'
+        );
 
-      const jobsWithApplicationStatus = jobsData.map((job: any) => ({
-        ...job,
-        applied: !!appliedJobs[company]?.[job.id],
-      }));
+        const jobsWithApplicationStatus = jobsData.map((job: any) => ({
+          ...job,
+          applied: !!appliedJobs[company]?.[job.id],
+        }));
 
-      setJobs(jobsWithApplicationStatus);
-      setIsLoading(false);
+        setJobs(jobsWithApplicationStatus);
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     if (company) {
@@ -98,13 +110,29 @@ const GreenhouseCompanyJobsList = () => {
     <div className='px-4 w-full'>
       <h2 className='text-center font-semibold text-2xl'>
         Job Listings for {company?.toUpperCase()} (
-        {jobs?.length ? jobs.length : ''})
+        {jobs?.length ? (
+          jobs.length
+        ) : !isError ? (
+          <LoadingSpinner width='w-6' height='h-6' />
+        ) : (
+          ''
+        )}
+        )
       </h2>
-      <SearchAndSort
-        setSortOrder={setSortOrder}
-        setSearchQuery={setSearchQuery}
-        searchQuery={searchQuery}
-      />
+
+      {isError ? (
+        <div className='flex items-start justify-center pt-4'>
+          <div className='text-red-600 bg-white p-4 rounded-lg shadow-lg'>
+            Network error, sorry. Please try again later.
+          </div>
+        </div>
+      ) : (
+        <SearchAndSort
+          setSortOrder={setSortOrder}
+          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
+        />
+      )}
       <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2'>
         {isLoading
           ? // Render skeletons when loading

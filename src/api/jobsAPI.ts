@@ -19,7 +19,7 @@ const fetchJobs = async (backendUrl: string) => {
     return data.jobs; // Assuming the structure is as mentioned
   } catch (error) {
     console.error('Error fetching jobs:', error);
-    return []; // Return an empty array in case of error
+    return error;
   }
 };
 

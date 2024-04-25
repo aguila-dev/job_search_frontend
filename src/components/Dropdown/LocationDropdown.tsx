@@ -14,7 +14,7 @@ const LocationDropdown = ({
   };
 
   return (
-    <div className='relative'>
+    <div className='relative text-center'>
       <button type='button' onClick={() => setActiveLocation((prev) => !prev)}>
         Locations
       </button>

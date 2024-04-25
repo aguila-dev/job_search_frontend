@@ -33,7 +33,7 @@ const fetchWorkdayAPI = async (
   try {
     console.log('selectedLocations', selectedLocations);
     const queryURL = createQueryString(
-      `http://localhost:8000/jobs/${company}`,
+      `http://localhost:8000/v1/api/jobs/${company}`,
       {
         limit,
         offset,
@@ -42,17 +42,13 @@ const fetchWorkdayAPI = async (
       }
     );
     console.log('queryURL', queryURL);
-    const response = await fetch(
-      // `http://localhost:8000/jobs/${company}?limit=${limit}&offset=${offset}&searchText=${searchText}`,
-      queryURL,
-      {
-        method: 'GET', // Assuming your Node.js backend uses a GET request for this route
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      }
-    );
+    const response = await fetch(queryURL, {
+      method: 'GET', // Assuming your Node.js backend uses a GET request for this route
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
