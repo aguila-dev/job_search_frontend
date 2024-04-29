@@ -12,17 +12,23 @@ import { extractWorkdayJobId } from '../utils/extractJobIds';
 import { LoadingSpinner } from '../ui';
 import JobPostingSkeleton from '../ui/JobPostingSkeleton';
 import LocationDropdown from '../components/Dropdown/LocationDropdown';
-
-const WorkdayCompanyJobsList: React.FC = () => {
+interface LocationsData {
+  locations?: string[];
+  locationCountry?: string[];
+}
+const WorkdayCompanyJobsList = () => {
   const [jobs, setJobs] = useState<any>({});
   const [offset, setOffset] = useState<number>(0);
   const [totalJobCount, setTotalJobCount] = useState<number>(0);
-  console.log('totalJobCount', totalJobCount);
   const [searchText, setSearchText] = useState<string>('');
   const [tempSearchText, setTempSearchText] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<string>('');
-  const [dropdownLocations, setDropdownLocations] = useState<any[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<any[]>([]);
+  const [dropdownCities, setDropdownCities] = useState<[]>([]);
+  const [dropdownCountries, setDropdownCountries] = useState<[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<any>({
+    locations: [],
+    locationCountry: [],
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { company } = useParams<{ company: string }>();
@@ -49,6 +55,10 @@ const WorkdayCompanyJobsList: React.FC = () => {
     const getWorkdayJobs = async (company: string) => {
       setLoading(true);
       try {
+        console.log(
+          'selectedLocations in getWorkdayJobs >>>\n',
+          selectedLocations
+        );
         const data = await fetchWorkdayAPI(
           company as string,
           20,
@@ -56,6 +66,8 @@ const WorkdayCompanyJobsList: React.FC = () => {
           searchText,
           selectedLocations
         );
+
+        console.log('data', data);
 
         if (!data) {
           navigate('/');
@@ -76,6 +88,15 @@ const WorkdayCompanyJobsList: React.FC = () => {
         } else {
           setJobs(data);
         }
+
+        if (data.locations.cities && data.locations.countries) {
+          setDropdownCities(data.locations.cities);
+          setDropdownCountries(data.locations.countries);
+        } else if (data.locations.cities) {
+          setDropdownCities(data.locations.cities);
+        } else if (data.locations.countries) {
+          setDropdownCountries(data.locations.countries);
+        }
       } catch (error) {
         console.error('Error fetching jobs:', error);
       } finally {
@@ -83,21 +104,34 @@ const WorkdayCompanyJobsList: React.FC = () => {
       }
     };
 
-    const getWorkdayLocations = async (company: string) => {
+    if (company) {
+      getWorkdayJobs(company);
+      // getWorkdayLocations(company);
+    }
+  }, [company, offset, searchText, sortOrder, navigate, selectedLocations]);
+
+  useEffect(() => {
+    const fetchLocations = async (company: string) => {
       try {
-        const locations = await fetchWorkdayLocations(company);
-        // console.log('locations', locations);
-        setDropdownLocations(locations);
+        setLoading(true);
+        const data = await fetchWorkdayAPI(company);
+        if (data.locations.cities) {
+          setDropdownCities(data.locations.cities);
+        }
+        if (data.locations.countries) {
+          setDropdownCountries(data.locations.countries);
+        }
       } catch (error) {
         console.error('Error fetching locations:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     if (company) {
-      getWorkdayJobs(company);
-      getWorkdayLocations(company);
+      fetchLocations(company);
     }
-  }, [company, offset, searchText, sortOrder, navigate, selectedLocations]);
+  }, [company]);
 
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -105,12 +139,27 @@ const WorkdayCompanyJobsList: React.FC = () => {
     setOffset(0);
   };
 
-  const handleLocationChange = (locationId: string, isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedLocations((prev) => [...prev, locationId]);
-    } else {
-      setSelectedLocations((prev) => prev.filter((id) => id !== locationId));
-    }
+  const handleLocationChange = (
+    locationId: string,
+    isChecked: boolean,
+    type: 'locations' | 'locationCountry'
+  ) => {
+    setSelectedLocations((prev: any) => {
+      // Determine the field based on the type
+      const field = type === 'locations' ? 'locations' : 'locationCountry';
+
+      // Filter out the locationId if unchecked, or add it if checked and not already included
+      const updatedLocations = isChecked
+        ? [...prev[field], locationId].filter(
+            (value, index, self) => self.indexOf(value) === index
+          ) // Ensure no duplicates
+        : prev[field].filter((id: string) => id !== locationId);
+
+      return {
+        ...prev,
+        [field]: updatedLocations,
+      };
+    });
   };
 
   return (
@@ -127,9 +176,11 @@ const WorkdayCompanyJobsList: React.FC = () => {
       <div className='flex items-center justify-center'>
         <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 items-center justify-center'>
           <LocationDropdown
-            locations={dropdownLocations}
-            selectedLocations={selectedLocations}
-            onLocationChange={handleLocationChange}
+            locations={dropdownCities}
+            selectedLocations={selectedLocations.locations}
+            onLocationChange={(id, isChecked) =>
+              handleLocationChange(id, isChecked, 'locations')
+            }
           />
 
           <button
@@ -214,7 +265,13 @@ const WorkdayCompanyJobsList: React.FC = () => {
         >
           Previous
         </button>
-        <button type='button' onClick={() => setOffset(offset + 20)}>
+        <button
+          type='button'
+          className={`${
+            jobs?.jobPostings?.length < 20 ? 'hidden' : 'cursor-pointer'
+          }`}
+          onClick={() => setOffset(offset + 20)}
+        >
           Next
         </button>
       </section>

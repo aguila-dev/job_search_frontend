@@ -16,7 +16,7 @@ const fetchJobs = async (backendUrl: string) => {
       return dateB - dateA;
     });
 
-    return data.jobs; // Assuming the structure is as mentioned
+    return data.jobs;
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return error;

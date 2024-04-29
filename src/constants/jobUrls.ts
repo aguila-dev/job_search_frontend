@@ -180,7 +180,39 @@ const jobBackends = [
     name: 'cerebral',
     url: `${link}/cerebral/jobs`,
   },
+  {
+    title: 'Snyk',
+    name: 'snyk',
+    url: `${link}/snyk/jobs`,
+  },
+  {
+    title: 'Strava',
+    name: 'strava',
+    url: `${link}/strava/jobs`,
+  },
+  {
+    title: 'Calendly',
+    name: 'calendly',
+    url: `${link}/calendly/jobs`,
+  },
+  {
+    title: 'LinkedIn',
+    name: 'linkedin',
+    url: `${link}/linkedin/jobs`,
+  },
+  {
+    title: 'Smartsheet',
+    name: 'smartsheet',
+    url: `${link}/smartsheet/jobs`,
+  },
+  {
+    title: 'Exodus54',
+    name: 'exodus54',
+    url: `${link}/exodus54/jobs`,
+  },
 ];
+
+jobBackends.sort((a, b) => a.title.localeCompare(b.title));
 
 /**
  * Workday job URLs
@@ -205,6 +237,13 @@ export const workdayJobs = [
     name: 'accenture',
     url: 'https://accenture.wd3.myworkdayjobs.com/Accenture_Careers',
   },
+  {
+    title: 'Nvidia',
+    name: 'nvidia',
+    url: 'https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite',
+  },
 ];
+
+workdayJobs.sort((a, b) => a.title.localeCompare(b.title));
 
 export default jobBackends;

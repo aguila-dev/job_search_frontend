@@ -9,12 +9,15 @@ const LocationDropdown = ({
 }: LocationDropdownProps) => {
   const [activeLocation, setActiveLocation] = useState<boolean>(false);
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onLocationChange(event.target.value, event.target.checked);
+  const handleCheckboxChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: string
+  ) => {
+    onLocationChange(event.target.value, event.target.checked, type);
   };
 
   return (
-    <div className='relative text-center'>
+    <div className='relative text-center z-50'>
       <button type='button' onClick={() => setActiveLocation((prev) => !prev)}>
         Locations
       </button>
@@ -24,7 +27,7 @@ const LocationDropdown = ({
           activeLocation ? 'flex flex-col' : 'hidden'
         }`}
       >
-        {locations.map((location) => (
+        {locations.map((location: any) => (
           <div
             key={location.id}
             className='flex items-center p-2 hover:bg-gray-100'
@@ -34,11 +37,11 @@ const LocationDropdown = ({
               id={location.id}
               value={location.id}
               className='mr-2'
-              onChange={handleCheckboxChange}
+              onChange={(e) => handleCheckboxChange(e, 'locations')}
               checked={selectedLocations.includes(location.id)}
             />
             <label htmlFor={location.id} className='flex-grow cursor-pointer'>
-              {location.name}
+              {location.descriptor}
             </label>
           </div>
         ))}
