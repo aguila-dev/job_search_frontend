@@ -15,7 +15,6 @@ const GreenhouseCompanyJobsList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
-  console.log('isError', isError);
 
   const navigate = useNavigate();
 

@@ -19,7 +19,7 @@ const SinglePosting = ({ job }: any) => {
     >
       <p className='text-sm'>id: {job?.id}</p>
       <h3 className='font-semibold text-base bg-slate-300'>
-        {job?.title ? job.title : 'title here'}
+        {job?.title ? job.title : 'missing title'}
       </h3>
       <div className='text-xs'>
         <p>Last Updated: </p>

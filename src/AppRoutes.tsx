@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import GreenhouseCompanyJobsList from './pages/GreenhouseCompanyJobsList';
 import AppliedJobsComponent from './pages/AppliedJobs';
 import WorkdayCompanyJobsList from './pages/WorkdayCompanyJobsList';
+import TodaysJobsPostings from './pages/TodaysJobsPostings';
 
 const AppRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const AppRoutes = () => {
       <Route path='/:company' element={<GreenhouseCompanyJobsList />} />
       <Route path='/applied-jobs' element={<AppliedJobsComponent />} />
       <Route path='/workday/:company' element={<WorkdayCompanyJobsList />} />
+      <Route path='/todays-jobs' element={<TodaysJobsPostings />} />
     </Routes>
   );
 };

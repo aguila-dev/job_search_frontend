@@ -12,6 +12,6 @@ export const NAVBAR_LINKS = [
   {
     name: " Today's Jobs",
     path: '/todays-jobs',
-    active: false,
+    active: true,
   },
 ];

@@ -1,6 +1,8 @@
 // src/api/jobsAPI.js
 
-const fetchJobs = async (backendUrl: string) => {
+import { isJobPostedToday } from '../utils/isJobPostedToday';
+
+const fetchJobs = async (backendUrl: string, today: boolean = false) => {
   try {
     const response = await fetch(backendUrl);
     if (!response.ok) {
@@ -16,7 +18,9 @@ const fetchJobs = async (backendUrl: string) => {
       return dateB - dateA;
     });
 
-    return data.jobs;
+    return today
+      ? data.jobs.filter((job: any) => isJobPostedToday(job.updated_at))
+      : data.jobs;
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return error;

@@ -33,16 +33,19 @@ const Home = () => {
         Greenhouse Companies ({jobBackends.length})
       </h2>
       <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-        {jobBackends.map((company, index) => (
-          <button
-            key={index}
-            onClick={() => handleCompanyClick(company)}
-            className='company-name-btn'
-            type='button'
-          >
-            {company.title}
-          </button>
-        ))}
+        {jobBackends.map(
+          (company, index) =>
+            company.active && (
+              <button
+                key={index}
+                onClick={() => handleCompanyClick(company)}
+                className='company-name-btn'
+                type='button'
+              >
+                {company.title}
+              </button>
+            )
+        )}
       </div>
       <h2 className='text-xl font-semibold text-center'>
         Workday Companies ({workdayJobs.length})
