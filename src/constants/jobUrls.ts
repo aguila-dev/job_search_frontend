@@ -242,6 +242,26 @@ export const workdayJobs = [
     name: 'nvidia',
     url: 'https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite',
   },
+  {
+    title: 'Patagonia',
+    name: 'patagonia',
+    url: 'https://patagonia.wd5.myworkdayjobs.com/PWCareers',
+  },
+  {
+    title: 'Georgetown University',
+    name: 'georgetown',
+    url: 'https://georgetown.wd1.myworkdayjobs.com/Georgetown_Admin_Careers',
+  },
+  {
+    title: 'Travelers',
+    name: 'travelers',
+    url: 'https://travelers.wd5.myworkdayjobs.com/External',
+  },
+  {
+    title: 'The Hartford',
+    name: 'thehartford',
+    url: 'https://thehartford.wd5.myworkdayjobs.com/Careers_External',
+  },
 ];
 
 workdayJobs.sort((a, b) => a.title.localeCompare(b.title));

@@ -78,7 +78,10 @@ const AppliedJobsComponent = () => {
   );
   return (
     <div className='px-4'>
-      <h2>Applied Jobs</h2>
+      <h2>
+        Applied Jobs{' '}
+        {appliedJobs.length > 0 ? <span>({appliedJobs.length})</span> : ''}
+      </h2>
       <SearchAndSort
         setSortOrder={setSortOrder}
         setSearchQuery={setSearchQuery}

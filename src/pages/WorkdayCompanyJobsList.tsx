@@ -163,7 +163,7 @@ const WorkdayCompanyJobsList = () => {
   };
 
   return (
-    <div className='px-4 w-full scrollbar-hide'>
+    <div className='px-4 w-full scrollbar-hide flex flex-col items-center justify-center'>
       <h2 className='text-center font-semibold text-2xl'>
         Job listings for {currentCompany?.title} (
         {totalJobCount ? (
@@ -215,7 +215,7 @@ const WorkdayCompanyJobsList = () => {
           value={tempSearchText}
           onChange={(e) => setTempSearchText(e.target.value)}
           placeholder='Search jobs...'
-          className='search-input flex-1'
+          className='p-2 flex-1 active:outline-none focus:outline-none bg-transparent border-none text-slate-900'
         />
         <button
           type='submit'

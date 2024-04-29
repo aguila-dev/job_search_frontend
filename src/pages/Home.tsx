@@ -47,7 +47,7 @@ const Home = () => {
       <h2 className='text-xl font-semibold text-center'>
         Workday Companies ({workdayJobs.length})
       </h2>
-      <div className='flex flex-wrap gap-4'>
+      <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
         {workdayJobs.map((company, index) => (
           <button
             key={index}
