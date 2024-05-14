@@ -29,7 +29,7 @@ const WorkdayCompanyJobsList = () => {
     locations: [],
     locationCountry: [],
   });
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const { company } = useParams<{ company: string }>();
   const currentCompany = workdayJobs.find((comp) => comp.name === company);
@@ -38,22 +38,22 @@ const WorkdayCompanyJobsList = () => {
     extractWorkdayJobId
   );
 
-  useEffect(() => {
-    if (loading) {
-      document.body.classList.add('no-scroll');
-    } else {
-      document.body.classList.remove('no-scroll');
-    }
+  // useEffect(() => {
+  //   if (isLoading) {
+  //     document.body.classList.add('no-scroll');
+  //   } else {
+  //     document.body.classList.remove('no-scroll');
+  //   }
 
-    // Cleanup function to remove the class when the component unmounts
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, [loading]);
+  //   // Cleanup function to remove the class when the component unmounts
+  //   return () => {
+  //     document.body.classList.remove('no-scroll');
+  //   };
+  // }, [isLoading]);
 
   useEffect(() => {
     const getWorkdayJobs = async (company: string) => {
-      setLoading(true);
+      setIsLoading(true);
       try {
         console.log(
           'selectedLocations in getWorkdayJobs >>>\n',
@@ -100,7 +100,7 @@ const WorkdayCompanyJobsList = () => {
       } catch (error) {
         console.error('Error fetching jobs:', error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -113,7 +113,7 @@ const WorkdayCompanyJobsList = () => {
   useEffect(() => {
     const fetchLocations = async (company: string) => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const data = await fetchWorkdayAPI(company);
         if (data.locations.cities) {
           setDropdownCities(data.locations.cities);
@@ -124,7 +124,7 @@ const WorkdayCompanyJobsList = () => {
       } catch (error) {
         console.error('Error fetching locations:', error);
       } finally {
-        setLoading(false);
+        // setIsLoading(false);
       }
     };
 
@@ -161,7 +161,7 @@ const WorkdayCompanyJobsList = () => {
       };
     });
   };
-
+  console.log('isloading', isLoading);
   return (
     <div className='px-4 w-full scrollbar-hide flex flex-col items-center justify-center'>
       <h2 className='text-center font-semibold text-2xl'>
@@ -228,9 +228,12 @@ const WorkdayCompanyJobsList = () => {
         </button>
       </form>
       <ul className='pt-2 jobs-list-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2'>
-        {loading
+        {isLoading
           ? Array.from({ length: 10 }, (_, index) => (
-              <li key={index} className='job-posting'>
+              <li
+                key={index}
+                className='job-posting flex flex-col justify-between'
+              >
                 <JobPostingSkeleton />
               </li>
             ))

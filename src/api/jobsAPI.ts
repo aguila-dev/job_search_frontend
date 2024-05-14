@@ -1,6 +1,6 @@
 // src/api/jobsAPI.js
-
 import { isJobPostedToday } from '../utils/isJobPostedToday';
+// import { wait } from '../utils/wait';
 
 const fetchJobs = async (backendUrl: string, today: boolean = false) => {
   try {
@@ -8,7 +8,7 @@ const fetchJobs = async (backendUrl: string, today: boolean = false) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-
+    // await wait(1000);
     const data = await response.json();
 
     // sort the jobs by date

@@ -5,12 +5,12 @@ import { LoadingSpinner } from '../ui';
 import JobPostingSkeleton from '../ui/JobPostingSkeleton';
 import SinglePosting from '../components/Cards/SinglePosting';
 
-interface Job {
-  title: string;
-  name: string;
-  url: string;
-  active: boolean;
-}
+// interface Job {
+//   title: string;
+//   name: string;
+//   url: string;
+//   active?: boolean;
+// }
 
 const TodaysJobsPostings = () => {
   const [newJobs, setNewJobs] = useState<any[]>([]);
@@ -24,7 +24,7 @@ const TodaysJobsPostings = () => {
       setIsError(false);
       try {
         const jobsPromises = jobBackends.map(
-          (job: Job) =>
+          (job: JobData) =>
             job.active &&
             job.title &&
             fetchJobs(job.url, true).catch((e) => {
@@ -33,10 +33,13 @@ const TodaysJobsPostings = () => {
             })
         );
         const jobsArrays = await Promise.all(jobsPromises);
+        console.log('Jobs arrays:', jobsArrays);
+
         // Filter out jobs without titles immediately after fetching
-        const validJobs = jobsArrays.filter((job: any) => !job.title);
-        console.log('Valid jobs:\n', validJobs);
-        const allNewJobs = validJobs.flat().map((companyJob) => {
+        // Filter out non-array items
+        const validJobsArrays = jobsArrays.filter(Array.isArray);
+        console.log('Valid jobs arrays:', validJobsArrays);
+        const allNewJobs = validJobsArrays.flat().map((companyJob) => {
           const appliedJobs = JSON.parse(
             localStorage.getItem('appliedJobs') || '{}'
           );
@@ -74,18 +77,20 @@ const TodaysJobsPostings = () => {
   console.log('Jobs without titles:', jobsWithoutTitles.length);
   console.log('Jobs without titles:', jobsWithoutTitles);
   return (
-    <div>
+    <>
       {isError ? (
         <div>Error loading jobs. Please try again later.</div>
       ) : (
         <>
-          TodaysJobsPostings (
-          {isLoading ? (
-            <LoadingSpinner width='w-5' height='h-5' />
-          ) : (
-            newJobs.length && newJobs.length
-          )}
-          )
+          <h1>
+            Todays Jobs Postings (
+            {isLoading ? (
+              <LoadingSpinner width='w-5' height='h-5' />
+            ) : (
+              newJobs.length && newJobs.length
+            )}
+            )
+          </h1>
           <div className='flex flex-col w-full items-center gap-4'>
             <div className='w-full text-center pb-2'>
               <input
@@ -97,7 +102,7 @@ const TodaysJobsPostings = () => {
               />
             </div>
           </div>
-          <ul className='pt-2 jobs-list-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2'>
+          <ul className='pt-2 jobs-list-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 flex-grow'>
             {isLoading
               ? // Render skeletons when loading
                 Array.from({ length: 10 }, (_, index) => (
@@ -124,7 +129,7 @@ const TodaysJobsPostings = () => {
           </ul>
         </>
       )}
-    </div>
+    </>
   );
 };
 

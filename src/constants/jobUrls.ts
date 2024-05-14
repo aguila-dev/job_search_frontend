@@ -1,5 +1,15 @@
 const link = 'https://boards-api.greenhouse.io/v1/boards';
-const jobBackends = [
+
+/**
+ * Job backend URLs
+ * @type {Array<{title: string, name: string, url: string, active: boolean}>}
+ * title: The title of the company.
+ * name: The name of the company, used for parameterizing the URL.
+ * url: The URL to fetch job listings from (FRONTEND BASE PATH).
+ * active: Whether the company is currently hiring or not.
+ */
+
+const jobBackends: JobData[] = [
   {
     title: 'RVO Health',
     name: 'rvohealth',
@@ -252,6 +262,12 @@ const jobBackends = [
     url: `${link}/exodus54/jobs`,
     active: true,
   },
+  {
+    title: 'Zwift',
+    name: 'zwift',
+    url: `${link}/zwift/jobs`,
+    active: true,
+  },
 ];
 
 jobBackends.sort((a, b) => a.title.localeCompare(b.title));
@@ -263,7 +279,7 @@ jobBackends.sort((a, b) => a.title.localeCompare(b.title));
  * name: The name of the company, used for parameterizing the URL.
  * url: The URL to fetch job listings from (FRONTEND BASE PATH).
  */
-export const workdayJobs = [
+export const workdayJobs: JobData[] = [
   {
     title: 'Booz Allen Hamilton',
     name: 'bah',
@@ -303,6 +319,11 @@ export const workdayJobs = [
     title: 'The Hartford',
     name: 'thehartford',
     url: 'https://thehartford.wd5.myworkdayjobs.com/Careers_External',
+  },
+  {
+    title: 'Capital One',
+    name: 'capitalone',
+    url: 'https://capitalone.wd1.myworkdayjobs.com/Capital_One',
   },
 ];
 

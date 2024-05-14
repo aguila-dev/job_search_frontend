@@ -16,7 +16,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
   };
 
   return (
-    <nav className='bg-zinc-500 text-slate-50 font-semibold p-4 w-full z-50'>
+    <nav className='bg-zinc-500 text-slate-50 font-semibold p-4 z-50'>
       {/* Hamburger Icon */}
       <div className='md:hidden flex justify-end max-h-16'>
         <button
@@ -52,7 +52,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
       </div>
 
       {/* Desktop Menu */}
-      <div className='hidden md:flex md:items-center md:justify-center md:gap-4'>
+      <div className='hidden md:flex md:flex-col md:items-center md:justify-center md:gap-4'>
         {navbarLinks.map(
           (link) =>
             link.active && (

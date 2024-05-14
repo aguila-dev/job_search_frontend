@@ -15,40 +15,6 @@ const createQueryString = (baseURL: string, params: any) => {
   return url;
 };
 
-// interface Params {
-//   limit: number | string;
-//   offset: number | string;
-//   searchText: string;
-//   locations?: string[];
-//   locationCountry?: string[];
-// }
-
-// const createQueryString = (baseUrl: string, params: Params) => {
-//   const url = new URL(baseUrl);
-//   console.log('selectedLocations in createQueryString >>>\n', params.locations);
-//   url.searchParams.append('limit', String(params.limit));
-//   url.searchParams.append('offset', String(params.offset));
-//   url.searchParams.append('searchText', params.searchText);
-
-//   // if (!selectedLocations) {
-//   //   return url.toString();
-//   // }
-//   if (params.locations && Array.isArray(params.locations)) {
-//     params.locations.forEach((city: string) => {
-//       url.searchParams.append('locations', city);
-//     });
-//   }
-
-//   // Append locationCountry if they exist and are an array
-//   if (params.locationCountry && Array.isArray(params.locationCountry)) {
-//     params.locationCountry.forEach((country: string) => {
-//       url.searchParams.append('locationCountry', country);
-//     });
-//   }
-
-//   return url.toString();
-// };
-
 /**
  * Fetch job listings from the Workday API.
  * @param limit The maximum number of job listings to fetch.
@@ -56,11 +22,6 @@ const createQueryString = (baseURL: string, params: any) => {
  * @param searchText The text to search for in job listings.
  * @returns A promise that resolves to the job listings.
  */
-
-// interface LocationsData {
-//   locations?: string[];
-//   locationCountry?: string[];
-// }
 
 const fetchWorkdayAPI = async (
   company: string,

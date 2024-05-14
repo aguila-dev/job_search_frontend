@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import SinglePosting from '../components/Cards/SinglePosting';
 import SearchAndSort from '../components/SearchAndSort';
+import TableRow from '../components/Table/TableRow';
 
 const AppliedJobsComponent = () => {
   const [appliedJobs, setAppliedJobs] = useState<[]>([]);
@@ -76,36 +77,65 @@ const AppliedJobsComponent = () => {
     (job: any) =>
       selectedCompany === 'All Companies' || job.company === selectedCompany
   );
+
+  console.log({ filteredByCompany });
   return (
     <div className='px-4'>
       <h2>
         Applied Jobs{' '}
-        {appliedJobs.length > 0 ? <span>({appliedJobs.length})</span> : ''}
+        {appliedJobs.length > 0 ? (
+          <span>({appliedJobs.length})</span>
+        ) : (
+          '- No job applications yet :('
+        )}
       </h2>
-      <SearchAndSort
-        setSortOrder={setSortOrder}
-        setSearchQuery={setSearchQuery}
-        searchQuery={searchQuery}
-      />
-      <label htmlFor='sort-by'>Sort by:</label>
-      <select
-        title='Sort by'
-        name='sort-by'
-        id='sort-by'
-        aria-label='Sort by'
-        className='w-full rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50'
-        value={selectedCompany}
-        onChange={(e) => setSelectedCompany(e.target.value)}
-      >
-        {companyOptions}
-      </select>
-      <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
+      {appliedJobs && appliedJobs.length > 0 ? (
+        <>
+          <SearchAndSort
+            setSortOrder={setSortOrder}
+            setSearchQuery={setSearchQuery}
+            searchQuery={searchQuery}
+          />
+          <label htmlFor='sort-by'>Sort by:</label>
+          <select
+            title='Sort by'
+            name='sort-by'
+            id='sort-by'
+            aria-label='Sort by'
+            className='w-full rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50'
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+          >
+            {companyOptions}
+          </select>
+          <div className='overflow-y-scroll max-h-[66dvh] md:max-h-[78dvh] text-xs sm:text-sm md:text-md lg:text-lg '>
+            <table className='px-4 xl:w-[1000px]'>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Title</th>
+                  <th>Location</th>
+                  <th>Updated At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredByCompany.map((job, index) => (
+                  <TableRow key={index} job={job} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        <p>No jobs found</p>
+      )}
+      {/* <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
         {filteredByCompany.map((job, index) => (
           <li key={index} className='job-posting'>
             <SinglePosting job={job} />
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 };
