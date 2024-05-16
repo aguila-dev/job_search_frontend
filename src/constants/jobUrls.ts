@@ -1,4 +1,6 @@
 const link = 'https://boards-api.greenhouse.io/v1/boards';
+import AIRBNB_LOGO from '../assets/logos/airbnb.svg';
+console.log(AIRBNB_LOGO);
 
 /**
  * Job backend URLs
@@ -27,6 +29,7 @@ const jobBackends: JobData[] = [
     name: 'airbnb',
     url: `${link}/airbnb/jobs`,
     active: true,
+    logo: AIRBNB_LOGO,
   },
   {
     title: 'Dropbox',

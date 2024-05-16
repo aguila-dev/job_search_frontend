@@ -9,6 +9,7 @@ import SinglePostingRow from '../components/Table/SinglePostingRow';
 import { LoadingSpinner } from '../ui';
 import downloadAppliedJobDetails from '../utils/downloadJobDetails';
 import SearchAndSort from '../components/SearchAndSort';
+// import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
 // Main component
 const GreenhouseCompanyJobsList: React.FC = () => {
@@ -46,6 +47,7 @@ const GreenhouseCompanyJobsList: React.FC = () => {
 
         setJobs(jobsWithApplicationStatus);
       } catch (error) {
+        console.error('Error fetching jobs:', error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -84,7 +86,8 @@ const GreenhouseCompanyJobsList: React.FC = () => {
     return 0;
   });
 
-  const handleApplicationToggle = (jobId: number) => {
+  const handleApplicationToggle = (job: any) => {
+    const jobId = job.id;
     const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '{}');
     if (company) {
       if (!appliedJobs[company]) {
@@ -96,8 +99,14 @@ const GreenhouseCompanyJobsList: React.FC = () => {
       } else {
         const jobToSave = jobs.find((job) => job.id === jobId);
         if (jobToSave) {
-          appliedJobs[company][jobId] = { ...jobToSave, applied: true };
-          const dateApplied = new Date().toLocaleDateString();
+          const dateApplied = new Date().toISOString().split('T')[0];
+          appliedJobs[company][jobId] = {
+            ...jobToSave,
+            applied: true,
+            appliedDate: dateApplied,
+            status: 'active',
+            considering: true,
+          };
           const fileContent = `Job ID: ${jobToSave.id}, Title: ${jobToSave.title}, Company: ${company}, Date Applied: ${dateApplied}\n`;
           downloadAppliedJobDetails(fileContent, `${company}-${jobId}.txt`);
         }
@@ -108,6 +117,9 @@ const GreenhouseCompanyJobsList: React.FC = () => {
       const updatedJobs = jobs.map((job) => ({
         ...job,
         applied: !!appliedJobs[company][job.id],
+        appliedDate: appliedJobs[company][job.id]?.appliedDate,
+        status: appliedJobs[company][job.id]?.status,
+        considering: appliedJobs[company][job.id]?.considering,
       }));
       setJobs(updatedJobs);
     }
@@ -158,11 +170,10 @@ const GreenhouseCompanyJobsList: React.FC = () => {
           searchQuery={searchQuery}
         />
       )}
-
       <div className='overflow-x-auto jobs-list-container'>
         <table className='min-w-full mt-4 border-collapse text-xs sm:text-base'>
           <thead>
-            <tr>
+            <tr className='bg-[#f4f4f4]'>
               <th className='border p-2'>Title</th>
               <th className='border p-2'>Last Updated</th>
               <th className='border p-2'>Location</th>
@@ -173,14 +184,14 @@ const GreenhouseCompanyJobsList: React.FC = () => {
           <tbody>
             {isLoading
               ? Array.from({ length: 10 }, (_, index) => (
-                  <SingleJobPostingSkeletonRow key={index} />
+                  <SingleJobPostingSkeletonRow key={index} cols={5} />
                 ))
               : sortedAndFilteredJobs.map((job: any, jobIndex: number) => (
                   <SinglePostingRow
                     key={jobIndex}
                     job={job}
                     onRowClick={() => fetchJobDetails(job.id)}
-                    onToggleApply={() => handleApplicationToggle(job.id)}
+                    onToggleApply={() => handleApplicationToggle(job)}
                   />
                 ))}
           </tbody>

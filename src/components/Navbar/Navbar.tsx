@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NavItem from '../Button/NavItem';
+import { MagnifyingGlassArrowLogo, MagnifyingGlassLogo } from '../Logo/AppLogo';
 
+type NavbarLink = {
+  name: string;
+  path: string;
+  active?: boolean;
+};
 interface NavbarProps {
-  navbarLinks: { name: string; path: string; active?: boolean }[];
+  navbarLinks: NavbarLink[];
 }
 
 const Navbar = ({ navbarLinks }: NavbarProps) => {
@@ -13,6 +20,10 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
     setIsMenuOpen(!isMenuOpen);
     // Optionally toggle body scroll lock
     document.body.style.overflow = isMenuOpen ? 'auto' : 'hidden';
+  };
+
+  const handleClickLink = (path: string) => {
+    navigate(path);
   };
 
   return (
@@ -27,7 +38,6 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
           {isMenuOpen ? <span>&times;</span> : <span>&#9776;</span>}
         </button>
       </div>
-
       {/* Fullscreen Menu for Mobile */}
       <div
         className={`fixed inset-0 bg-zinc-700 flex flex-col items-center justify-center transition-opacity duration-300 ${
@@ -40,10 +50,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
               <p
                 key={link.name}
                 className='text-xl py-4 cursor-pointer hover:opacity-75'
-                onClick={() => {
-                  navigate(link.path);
-                  handleMenuToggle();
-                }}
+                onClick={() => handleClickLink(link.path)}
               >
                 {link.name}
               </p>
@@ -56,13 +63,11 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
         {navbarLinks.map(
           (link) =>
             link.active && (
-              <p
+              <NavItem
                 key={link.name}
-                className='hover:cursor-pointer hover:opacity-90 px-4 py-2'
-                onClick={() => navigate(link.path)}
-              >
-                {link.name}
-              </p>
+                link={link}
+                handleClickLink={handleClickLink}
+              />
             )
         )}
       </div>

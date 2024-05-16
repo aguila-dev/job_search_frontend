@@ -2,7 +2,11 @@
 import { isJobPostedToday } from '../utils/isJobPostedToday';
 // import { wait } from '../utils/wait';
 
-const fetchJobs = async (backendUrl: string, today: boolean = false) => {
+const fetchJobs = async (
+  backendUrl: string,
+  companyName?: string,
+  today: boolean = false
+) => {
   try {
     const response = await fetch(backendUrl);
     if (!response.ok) {
@@ -18,12 +22,20 @@ const fetchJobs = async (backendUrl: string, today: boolean = false) => {
       return dateB - dateA;
     });
 
-    return today
-      ? data.jobs.filter((job: any) => isJobPostedToday(job.updated_at))
+    const jobsWithCompany = companyName
+      ? data.jobs.map((job: any) => ({
+          ...job,
+          company: companyName,
+        }))
       : data.jobs;
+
+    return today
+      ? jobsWithCompany.filter((job: any) => isJobPostedToday(job.updated_at))
+      : jobsWithCompany;
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return error;
+    // throw error;
   }
 };
 

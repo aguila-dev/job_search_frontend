@@ -10,26 +10,14 @@ const JobPostingSkeleton = () => {
   );
 };
 
-export const SingleJobPostingSkeletonRow = () => {
-  return (
-    <tr className='w-full animate-pulse'>
-      <td className='p-4 bg-slate-200'>
-        <div className='h-4 bg-slate-300 rounded mb-2'></div>
-      </td>
-      <td className='p-4 bg-slate-200'>
+export const SingleJobPostingSkeletonRow = ({ cols }: { cols: number }) => (
+  <tr className='w-full animate-pulse'>
+    {Array.from({ length: cols }, (_, index) => (
+      <td key={index} className='p-4 bg-slate-200'>
         <div className='h-4 bg-slate-300 rounded mb-2 w-3/4'></div>
       </td>
-      <td className='p-4 bg-slate-200'>
-        <div className='h-4 bg-slate-300 rounded mb-2 w-1/2'></div>
-      </td>
-      <td className='p-4 bg-slate-200'>
-        <div className='h-4 bg-slate-300 rounded mb-2 w-3/2'></div>
-      </td>
-      <td className='p-4 bg-slate-200'>
-        <div className='h-4 bg-slate-300 rounded mb-2 w-1/2'></div>
-      </td>
-    </tr>
-  );
-};
+    ))}
+  </tr>
+);
 
 export default JobPostingSkeleton;

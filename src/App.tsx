@@ -6,7 +6,7 @@ function App() {
   return (
     <div className='overflow-auto min-h-screen flex flex-col md:flex-row'>
       <Navbar navbarLinks={NAVBAR_LINKS} />
-      <main className='w-full flex flex-col gap-4 py-2 flex-1'>
+      <main className='w-full flex flex-col gap-4 p-4 flex-1'>
         <AppRoutes />
       </main>
     </div>

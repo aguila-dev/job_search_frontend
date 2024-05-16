@@ -1,141 +1,213 @@
-// Select element must have an accessible name: Element has no title attribute Microsoft Edge Toolsaxe/forms-label-title
 import { useEffect, useState } from 'react';
-import SinglePosting from '../components/Cards/SinglePosting';
+import { updateJobProperty } from '../utils/updateJobProperty';
 import SearchAndSort from '../components/SearchAndSort';
-import TableRow from '../components/Table/TableRow';
+import JobRow from '../components/Table/JobRow';
 
-const AppliedJobsComponent = () => {
-  const [appliedJobs, setAppliedJobs] = useState<[]>([]);
+// JobTable Component
+const JobTable: React.FC<JobTableProps> = ({
+  jobs,
+  handleAppliedDateChange,
+  handleStatusChange,
+  handleJobConsideration,
+  handleAppliedDateSort,
+  appliedDateSortOrder,
+}) => (
+  <table className='min-w-full border-collapse text-sm'>
+    <thead>
+      <tr className='bg-[#f4f4f4]'>
+        <th className='border p-2'>Company</th>
+        <th className='border p-2'>Job Title</th>
+        <th className='border p-2'>Location</th>
+        <th className='border p-2'>
+          <span className='cursor-pointer' onClick={handleAppliedDateSort}>
+            Applied Date {appliedDateSortOrder === 'desc' ? '↓' : '↑'}
+          </span>
+        </th>
+        <th className='border p-2'>Notes</th>
+        <th className='border p-2'>Status</th>
+        <th className='border p-2'>No Longer Considering</th>
+      </tr>
+    </thead>
+    <tbody>
+      {jobs.map((job, index) => (
+        <JobRow
+          key={job.id + index}
+          job={job}
+          handleAppliedDateChange={handleAppliedDateChange}
+          handleStatusChange={handleStatusChange}
+          handleJobConsideration={handleJobConsideration}
+        />
+      ))}
+    </tbody>
+  </table>
+);
+
+// Main Component
+const AppliedJobsComponent: React.FC = () => {
+  const [appliedJobs, setAppliedJobs] = useState<Job[]>([]);
   const [sortOrder, setSortOrder] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedCompany, setSelectedCompany] =
-    useState<string>('All Companies');
+  const [selectedTab, setSelectedTab] = useState<string>('tracking');
+  const [appliedDateSortOrder, setAppliedDateSortOrder] = useState<
+    'asc' | 'desc'
+  >('desc');
 
-  console.log('appliedJobs', appliedJobs);
   useEffect(() => {
     const allAppliedJobs = JSON.parse(
       localStorage.getItem('appliedJobs') || '{}'
     );
-
-    // Create a list that includes both job details and the company name
     const jobsList = Object.entries(allAppliedJobs).flatMap(
-      ([companyName, companyJobs]: any) =>
+      ([companyName, companyJobs]: [string, any]) =>
         Object.values(companyJobs).map((job: any) => ({
           ...job,
-          company: companyName, // Add the company name to each job object
+          company: companyName,
         }))
     );
-
-    setAppliedJobs(jobsList as any);
+    setAppliedJobs(jobsList);
   }, []);
 
   const filteredJobs = appliedJobs.filter(
-    (job: any) =>
+    (job) =>
       job?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job?.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (job?.location?.name &&
         job.location.name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const sortedAndFilteredJobs = filteredJobs.sort((a: any, b: any) => {
-    const dateA = new Date(a.updated_at).getTime(); // Convert to timestamp
-    const dateB = new Date(b.updated_at).getTime(); // Convert to timestamp
+  const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
+    const dateA = new Date(a?.updated_at).getTime();
+    const dateB = new Date(b?.updated_at).getTime();
+
+    const appliedDateSortOrderMultiplier =
+      appliedDateSortOrder === 'asc' ? 1 : -1;
 
     if (sortOrder === 'newest') {
-      return dateB - dateA; // Ensure arithmetic operation is between numbers
+      return dateB - dateA;
     } else if (sortOrder === 'oldest') {
-      return dateA - dateB; // Ensure arithmetic operation is between numbers
+      return dateA - dateB;
+    } else if (sortOrder === 'appliedDate') {
+      if (a.appliedDate && b.appliedDate) {
+        return (
+          appliedDateSortOrderMultiplier *
+          (new Date(a.appliedDate).getTime() -
+            new Date(b.appliedDate).getTime())
+        );
+      } else if (a.appliedDate) {
+        return -1;
+      } else if (b.appliedDate) {
+        return 1;
+      }
     }
     return 0;
   });
 
-  const setOfCompanies = new Set(appliedJobs.map((job: any) => job.company));
-  const companyOptions = [
-    <option
-      key='all'
-      value='All Companies'
-      title='all'
-      label='all'
-      aria-label='all'
-    >
-      All Companies
-    </option>,
-    ...Array.from(setOfCompanies).map((company, index) => (
-      <option
-        key={index}
-        value={company}
-        title={company}
-        label={company}
-        aria-label={company}
-      >
-        {company}
-      </option>
-    )),
-  ];
-  // Filter jobs based on the selected company
-  const filteredByCompany = sortedAndFilteredJobs.filter(
-    (job: any) =>
-      selectedCompany === 'All Companies' || job.company === selectedCompany
+  const trackingJobs = sortedAndFilteredJobs.filter((job) => job.considering);
+  const noLongerConsideringJobs = sortedAndFilteredJobs.filter(
+    (job) => !job.considering
   );
 
-  console.log({ filteredByCompany });
+  const handleAppliedDateChange = (
+    company: string,
+    jobId: number,
+    newDate: string
+  ) => {
+    updateJobProperty(company, jobId, 'appliedDate', newDate);
+    setAppliedJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.company === company && job.id === jobId
+          ? { ...job, appliedDate: newDate }
+          : job
+      )
+    );
+  };
+
+  const handleStatusChange = (
+    company: string,
+    jobId: number,
+    status: string
+  ) => {
+    updateJobProperty(company, jobId, 'status', status);
+    setAppliedJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.company === company && job.id === jobId ? { ...job, status } : job
+      )
+    );
+  };
+
+  const handleJobConsideration = (
+    company: string,
+    jobId: number,
+    considering: boolean
+  ) => {
+    updateJobProperty(company, jobId, 'considering', considering);
+    setAppliedJobs((prevJobs) =>
+      prevJobs.map((job) =>
+        job.company === company && job.id === jobId
+          ? { ...job, considering }
+          : job
+      )
+    );
+  };
+
+  const handleAppliedDateSort = () => {
+    const newSortOrder = appliedDateSortOrder === 'desc' ? 'asc' : 'desc';
+    setAppliedDateSortOrder(newSortOrder);
+    setSortOrder('appliedDate');
+  };
+
   return (
-    <div className='px-4'>
-      <h2>
-        Applied Jobs{' '}
-        {appliedJobs.length > 0 ? (
-          <span>({appliedJobs.length})</span>
-        ) : (
-          '- No job applications yet :('
-        )}
+    <div className='container mx-auto p-4 bg-white shadow-md rounded-lg'>
+      <h2 className='text-center font-semibold text-2xl mb-4'>
+        Applied Jobs {appliedJobs.length > 0 && `(${appliedJobs.length})`}
       </h2>
-      {appliedJobs && appliedJobs.length > 0 ? (
-        <>
-          <SearchAndSort
-            setSortOrder={setSortOrder}
-            setSearchQuery={setSearchQuery}
-            searchQuery={searchQuery}
+      <SearchAndSort
+        setSortOrder={setSortOrder}
+        setSearchQuery={setSearchQuery}
+        searchQuery={searchQuery}
+      />
+      <div className='tabs flex justify-center mb-4'>
+        <button
+          className={`tab px-4 py-2 rounded-t-lg ${
+            selectedTab === 'tracking'
+              ? 'bg-white border-b-2 border-transparent'
+              : 'bg-slate-100'
+          }`}
+          onClick={() => setSelectedTab('tracking')}
+        >
+          Job Tracking
+        </button>
+        <button
+          className={`tab px-4 py-2 rounded-t-lg ${
+            selectedTab === 'noLongerConsidering'
+              ? 'bg-white border-b-2 border-transparent'
+              : 'bg-slate-100'
+          }`}
+          onClick={() => setSelectedTab('noLongerConsidering')}
+        >
+          No Longer Considering
+        </button>
+      </div>
+      <div className='tab-content'>
+        {selectedTab === 'tracking' ? (
+          <JobTable
+            jobs={trackingJobs}
+            handleAppliedDateChange={handleAppliedDateChange}
+            handleStatusChange={handleStatusChange}
+            handleJobConsideration={handleJobConsideration}
+            handleAppliedDateSort={handleAppliedDateSort}
+            appliedDateSortOrder={appliedDateSortOrder}
           />
-          <label htmlFor='sort-by'>Sort by:</label>
-          <select
-            title='Sort by'
-            name='sort-by'
-            id='sort-by'
-            aria-label='Sort by'
-            className='w-full rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50'
-            value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
-          >
-            {companyOptions}
-          </select>
-          <div className='overflow-y-scroll max-h-[66dvh] md:max-h-[78dvh] text-xs sm:text-sm md:text-md lg:text-lg '>
-            <table className='px-4 xl:w-[1000px]'>
-              <thead>
-                <tr>
-                  <th>Company</th>
-                  <th>Title</th>
-                  <th>Location</th>
-                  <th>Updated At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredByCompany.map((job, index) => (
-                  <TableRow key={index} job={job} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      ) : (
-        <p>No jobs found</p>
-      )}
-      {/* <ul className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2'>
-        {filteredByCompany.map((job, index) => (
-          <li key={index} className='job-posting'>
-            <SinglePosting job={job} />
-          </li>
-        ))}
-      </ul> */}
+        ) : (
+          <JobTable
+            jobs={noLongerConsideringJobs}
+            handleAppliedDateChange={handleAppliedDateChange}
+            handleStatusChange={handleStatusChange}
+            handleJobConsideration={handleJobConsideration}
+            handleAppliedDateSort={handleAppliedDateSort}
+            appliedDateSortOrder={appliedDateSortOrder}
+          />
+        )}
+      </div>
     </div>
   );
 };
