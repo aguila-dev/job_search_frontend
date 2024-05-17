@@ -23,6 +23,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
   };
 
   const handleClickLink = (path: string) => {
+    setIsMenuOpen(false);
     navigate(path);
   };
 

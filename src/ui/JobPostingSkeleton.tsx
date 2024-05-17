@@ -20,4 +20,12 @@ export const SingleJobPostingSkeletonRow = ({ cols }: { cols: number }) => (
   </tr>
 );
 
+export const SkeletonCardLoader = () => (
+  <div className='animate-pulse flex items-center justify-between p-2 bg-gray-300 shadow-md rounded-lg text-sm'>
+    <div className='w-6 h-6 bg-gray-400 rounded-full'></div>
+    <div className='w-24 h-4 bg-gray-400 rounded'></div>
+    <div className='w-6 h-6 bg-gray-400 rounded'></div>
+  </div>
+);
+
 export default JobPostingSkeleton;

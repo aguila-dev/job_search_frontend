@@ -6,20 +6,25 @@ import CompanyNameCard from '../components/Cards/CompanyNameCard';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API } from '../constants';
+import { SkeletonCardLoader } from '../ui/JobPostingSkeleton';
 
 const Home = () => {
-  const navigate = useNavigate(); // Get the navigate function
-  const [companyList, setCompanyList] = useState([]); // Create a state variable to store the jobs
-  console.log('COMPANY LIST', companyList);
-  const handleCompanyClick = async (backend: any, workday?: boolean) => {
-    if (workday) {
-      navigate(`/workday/${backend.name}`);
-      return;
-    }
-    navigate(`/${backend.name}`);
+  const [companyList, setCompanyList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  console.log(companyList);
+
+  const handleCompanyClick = async (company: any) => {
+    // if (workday) {
+    //   navigate(`/workday/${backend.name}`);
+    //   return;
+    // }
+    navigate(`/${company.slug}`);
+    console.log('COMPANY CLICKED', company);
   };
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchCompanyList = async () => {
       try {
         const { data } = await axios.get(`${API.BASE_URL}${API.COMPANIES}`);
@@ -29,11 +34,12 @@ const Home = () => {
       }
     };
     fetchCompanyList();
+    setIsLoading(false);
   }, []);
 
   return (
     <div className='w-full flex flex-col items-center justify-start gap-4'>
-      <h2>
+      <h2 className='text-lg font-bold'>
         Welcome to the job board! Here you can find job listings for different
         companies.
       </h2>
@@ -42,13 +48,24 @@ const Home = () => {
       </h3>
 
       <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-        {companyList?.map((company, idx) => (
+        {isLoading
+          ? Array.from({ length: 10 }, (_, index) => (
+              <SkeletonCardLoader key={index} />
+            ))
+          : companyList?.map((company, idx) => (
+              <CompanyNameCard
+                key={idx}
+                company={company}
+                onClick={() => handleCompanyClick(company)}
+              />
+            ))}
+        {/* {companyList?.map((company, idx) => (
           <CompanyNameCard
             key={idx}
             company={company}
             onClick={() => handleCompanyClick(company)}
           />
-        ))}
+        ))} */}
       </div>
       {/* <h3 className='text-xl font-semibold text-center'>
         Greenhouse Companies ({jobBackends.length})

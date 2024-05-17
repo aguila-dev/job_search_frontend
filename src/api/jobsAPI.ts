@@ -1,37 +1,19 @@
 // src/api/jobsAPI.js
+import axios from 'axios';
 import { isJobPostedToday } from '../utils/isJobPostedToday';
-// import { wait } from '../utils/wait';
+import { wait } from '../utils/wait';
 
-const fetchJobs = async (
-  backendUrl: string,
-  companyName?: string,
-  today: boolean = false
-) => {
+const fetchJobs = async (companySlug: string) => {
   try {
-    const response = await fetch(backendUrl);
-    if (!response.ok) {
+    const { data } = await axios.get(
+      `http://localhost:8000/v1/api/jobs/company/${companySlug}`
+    );
+
+    if (!data) {
       throw new Error('Network response was not ok');
     }
     // await wait(1000);
-    const data = await response.json();
-
-    // sort the jobs by date
-    data.jobs.sort((a: any, b: any) => {
-      const dateA = new Date(a.updated_at).getTime();
-      const dateB = new Date(b.updated_at).getTime();
-      return dateB - dateA;
-    });
-
-    const jobsWithCompany = companyName
-      ? data.jobs.map((job: any) => ({
-          ...job,
-          company: companyName,
-        }))
-      : data.jobs;
-
-    return today
-      ? jobsWithCompany.filter((job: any) => isJobPostedToday(job.updated_at))
-      : jobsWithCompany;
+    return data;
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return error;

@@ -9,43 +9,33 @@ import SinglePostingRow from '../components/Table/SinglePostingRow';
 import { LoadingSpinner } from '../ui';
 import downloadAppliedJobDetails from '../utils/downloadJobDetails';
 import SearchAndSort from '../components/SearchAndSort';
+import { JobSourceEnum } from '../constants';
 // import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
 // Main component
 const GreenhouseCompanyJobsList: React.FC = () => {
   const { company } = useParams<{ company: string }>();
   const [jobs, setJobs] = useState<any[]>([]);
+  const [data, setData] = useState<any>({});
   const [sortOrder, setSortOrder] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const navigate = useNavigate();
-
   useEffect(() => {
-    const getJobs = async (company: string) => {
+    const getJobs = async (company: any) => {
       setIsLoading(true);
       setIsError(false);
-      const backendUrl = getBackendUrl(company);
-      if (!backendUrl) {
-        navigate('/');
-        return;
-      }
+
       try {
-        const jobsData = await fetchJobs(backendUrl);
+        const jobsData = await fetchJobs(company);
         if (!jobsData) {
           throw new Error('Network response errored out');
         }
-        const appliedJobs = JSON.parse(
-          localStorage.getItem('appliedJobs') || '{}'
-        );
-
-        const jobsWithApplicationStatus = jobsData.map((job: any) => ({
-          ...job,
-          applied: !!appliedJobs[company]?.[job.id],
-        }));
-
-        setJobs(jobsWithApplicationStatus);
+        const jobs = jobsData.jobs;
+        setData(jobsData);
+        setJobs(jobs);
       } catch (error) {
         console.error('Error fetching jobs:', error);
         setIsError(true);
@@ -125,12 +115,50 @@ const GreenhouseCompanyJobsList: React.FC = () => {
     }
   };
 
-  const fetchJobDetails = async (jobId: number) => {
-    if (company) {
+  function extractJobPath(url: string): string {
+    const regex = /\/job\/(.*)/;
+    const match = url.match(regex);
+    return match ? match[1] : '';
+  }
+
+  const fetchJobDetails = async (job: any) => {
+    console.log('JOB', job);
+    if (
+      company &&
+      job.jobId &&
+      job.jobSource.name === JobSourceEnum.GREENHOUSE
+    ) {
       const response = await axios.get(
-        `https://boards-api.greenhouse.io/v1/boards/${company}/jobs/${jobId}`
+        `${job.company.apiEndpoint}/${job.jobId}`
       );
       setSelectedJob(response.data);
+    } else if (
+      company &&
+      job.jobId &&
+      job.jobSource.name === JobSourceEnum.WORKDAY
+    ) {
+      console.log('workday job to be implemented');
+      console.log('Job endpoint:', job.company.apiEndpoint);
+      const jobPath = extractJobPath(job.absoluteUrl);
+      console.log('Job path:', jobPath);
+      const fullBackendUrl = `${job.company.apiEndpoint.replace(
+        '/jobs',
+        '/job'
+      )}/${jobPath}`;
+      console.log('Full URL:', fullBackendUrl);
+      const response = await axios.get(
+        'http://localhost:8000/v1/api/jobs/workday/individualJob',
+        { params: { fullBackendUrl } }
+      );
+      console.log('Response in FRONTEND!!:', JSON.stringify(response.data));
+      setSelectedJob(response.data);
+      console.log('make api call to get job details from workday');
+    } else {
+      console.error(
+        `No job details found for ${job.title} in ${company}...no ${{
+          ...Object.values(JobSourceEnum),
+        }}`
+      );
     }
   };
 
@@ -140,6 +168,8 @@ const GreenhouseCompanyJobsList: React.FC = () => {
     }
   }
 
+  console.log('selectedJob:', selectedJob);
+
   return (
     <div className='px-4 w-full'>
       <h2 className='text-center font-semibold text-2xl flex justify-center items-center'>
@@ -147,7 +177,7 @@ const GreenhouseCompanyJobsList: React.FC = () => {
         <span className='inline-flex justify-center items-center'>
           &#40;
           {jobs?.length ? (
-            jobs.length
+            data?.count
           ) : !isError ? (
             <LoadingSpinner width='w-6' height='h-6' />
           ) : (
@@ -174,6 +204,7 @@ const GreenhouseCompanyJobsList: React.FC = () => {
         <table className='min-w-full mt-4 border-collapse text-xs sm:text-base'>
           <thead>
             <tr className='bg-[#f4f4f4]'>
+              <th className='border p-2'>Company</th>
               <th className='border p-2'>Title</th>
               <th className='border p-2'>Last Updated</th>
               <th className='border p-2'>Location</th>
@@ -184,13 +215,13 @@ const GreenhouseCompanyJobsList: React.FC = () => {
           <tbody>
             {isLoading
               ? Array.from({ length: 10 }, (_, index) => (
-                  <SingleJobPostingSkeletonRow key={index} cols={5} />
+                  <SingleJobPostingSkeletonRow key={index} cols={6} />
                 ))
               : sortedAndFilteredJobs.map((job: any, jobIndex: number) => (
                   <SinglePostingRow
                     key={jobIndex}
                     job={job}
-                    onRowClick={() => fetchJobDetails(job.id)}
+                    onRowClick={() => fetchJobDetails(job)}
                     onToggleApply={() => handleApplicationToggle(job)}
                   />
                 ))}
@@ -213,7 +244,13 @@ const GreenhouseCompanyJobsList: React.FC = () => {
             <div
               className='job-details-content prose'
               dangerouslySetInnerHTML={{
-                __html: he.decode(selectedJob.content),
+                __html: he.decode(
+                  selectedJob && selectedJob.content
+                    ? selectedJob.content
+                    : selectedJob.jobPostingInfo
+                    ? selectedJob.jobPostingInfo?.jobDescription
+                    : 'No content found'
+                ),
               }}
             ></div>
             <button

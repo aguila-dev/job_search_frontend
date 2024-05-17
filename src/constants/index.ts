@@ -17,4 +17,9 @@ const API = {
   APPLICATIONS: '/applications',
 };
 
-export { ROUTES, API };
+enum JobSourceEnum {
+  GREENHOUSE = 'greenhouse',
+  WORKDAY = 'workday',
+}
+
+export { ROUTES, API, JobSourceEnum };

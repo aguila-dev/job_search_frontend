@@ -12,7 +12,7 @@ const SinglePostingRow: React.FC<{
     e.stopPropagation();
     onToggleApply(job.id);
   };
-  console.log('job', job);
+
   return (
     <tr
       onClick={onRowClick}
@@ -22,23 +22,21 @@ const SinglePostingRow: React.FC<{
     >
       {job?.company ? (
         <td className='p-2 border-[1px] border-solid border-[#ddd]'>
-          {job.company}
+          {job.company.name}
         </td>
       ) : null}
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
         {job.title}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
-        {workday && job.postedOnDate
-          ? job.postedOnDate
-          : format(new Date(job.updated_at), 'MM/dd/yyyy')}
+        {format(new Date(job.lastUpdatedAt), 'MM/dd/yyyy')}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
-        {workday && job.locationsText ? job.locationsText : job.location.name}
+        {job.location}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
         <a
-          href={workday ? `${baseUrl}${job.externalPath}` : job.absolute_url}
+          href={job.absoluteUrl}
           target='_blank'
           rel='noopener noreferrer'
           className='text-blue-500 underline'
