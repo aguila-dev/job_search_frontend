@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import jobBackends from '../constants/jobUrls';
-import fetchJobs from '../api/jobsAPI';
+import fetchJobs, { fetchTodayJobs } from '../api/jobsAPI';
 import { LoadingSpinner } from '../ui';
 import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
 import SinglePostingRow from '../components/Table/SinglePostingRow';
@@ -8,6 +8,7 @@ import he from 'he';
 import axios from 'axios';
 import downloadAppliedJobDetails from '../utils/downloadJobDetails';
 import SearchAndSort from '../components/SearchAndSort';
+import { JobSourceEnum } from '../constants';
 
 const TodaysJobsPostings = () => {
   const [newJobs, setNewJobs] = useState<any[]>([]);
@@ -17,46 +18,50 @@ const TodaysJobsPostings = () => {
   const [sortOrder, setSortOrder] = useState<string>('');
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
+  console.log('newJobs:', newJobs);
+
   useEffect(() => {
     const fetchAllJobs = async () => {
       setIsLoading(true);
       setIsError(false);
       try {
-        const jobsPromises = jobBackends.map(
-          (job: JobData) =>
-            job.active &&
-            job.title &&
-            fetchJobs(job.url, job.name, true).catch((e) => {
-              console.error(`Error fetching jobs from ${job.name}:`, e);
-              return []; // Return an empty array in case of an error
-            })
-        );
-        const jobsArrays = await Promise.all(jobsPromises);
+        // const jobsPromises = jobBackends.map(
+        //   (job: JobData) =>
+        //     job.active &&
+        //     job.title &&
+        //     fetchJobs(job.url, job.name, true).catch((e) => {
+        //       console.error(`Error fetching jobs from ${job.name}:`, e);
+        //       return []; // Return an empty array in case of an error
+        //     })
+        // );
+        // const jobsArrays = await Promise.all(jobsPromises);
 
-        const appliedJobs = JSON.parse(
-          localStorage.getItem('appliedJobs') || '{}'
-        );
+        // const appliedJobs = JSON.parse(
+        //   localStorage.getItem('appliedJobs') || '{}'
+        // );
 
-        // Filter out jobs without titles immediately after fetching
-        // Filter out non-array items
-        const validJobsArrays = jobsArrays.filter(Array.isArray);
+        // // Filter out jobs without titles immediately after fetching
+        // // Filter out non-array items
+        // const validJobsArrays = jobsArrays.filter(Array.isArray);
 
-        const allNewJobs = validJobsArrays.flat().map((companyJob) => {
-          const appliedJobs = JSON.parse(
-            localStorage.getItem('appliedJobs') || '{}'
-          );
-          return {
-            ...companyJob,
-            applied: !!appliedJobs[companyJob.name]?.[companyJob.id],
-          };
-        });
+        // const allNewJobs = validJobsArrays.flat().map((companyJob) => {
+        //   const appliedJobs = JSON.parse(
+        //     localStorage.getItem('appliedJobs') || '{}'
+        //   );
+        //   return {
+        //     ...companyJob,
+        //     applied: !!appliedJobs[companyJob.name]?.[companyJob.id],
+        //   };
+        // });
 
-        const jobsWithApplicationStatus = allNewJobs.map((job: any) => ({
-          ...job,
-          applied: !!appliedJobs[job?.company]?.[job.id],
-        }));
+        // const jobsWithApplicationStatus = allNewJobs.map((job: any) => ({
+        //   ...job,
+        //   applied: !!appliedJobs[job?.company]?.[job.id],
+        // }));
 
-        setNewJobs(jobsWithApplicationStatus);
+        const response = await fetchTodayJobs();
+        const jobs = response.jobs;
+        setNewJobs(jobs);
       } catch (error) {
         console.error('Error fetching all jobs:', error);
         setIsError(true);
@@ -79,12 +84,50 @@ const TodaysJobsPostings = () => {
     };
   }, [selectedJob]);
 
+  // const fetchJobDetails = async (job: any) => {
+  //   if (job.company) {
+  //     const response = await axios.get(
+  //       `https://boards-api.greenhouse.io/v1/boards/${job.company}/jobs/${job.id}`
+  //     );
+  //     setSelectedJob(response.data);
+  //   }
+  // };
+  function extractJobPath(url: string): string {
+    const regex = /\/job\/(.*)/;
+    const match = url.match(regex);
+    return match ? match[1] : '';
+  }
+
   const fetchJobDetails = async (job: any) => {
-    if (job.company) {
+    console.log('JOB', job);
+    if (job.jobId && job.jobSource.name === JobSourceEnum.GREENHOUSE) {
       const response = await axios.get(
-        `https://boards-api.greenhouse.io/v1/boards/${job.company}/jobs/${job.id}`
+        `${job.company.apiEndpoint}/${job.jobId}`
       );
       setSelectedJob(response.data);
+    } else if (job.jobId && job.jobSource.name === JobSourceEnum.WORKDAY) {
+      console.log('workday job to be implemented');
+      console.log('Job endpoint:', job.company.apiEndpoint);
+      const jobPath = extractJobPath(job.absoluteUrl);
+      console.log('Job path:', jobPath);
+      const fullBackendUrl = `${job.company.apiEndpoint.replace(
+        '/jobs',
+        '/job'
+      )}/${jobPath}`;
+      console.log('Full URL:', fullBackendUrl);
+      const response = await axios.get(
+        'http://localhost:8000/v1/api/jobs/workday/individualJob',
+        { params: { fullBackendUrl } }
+      );
+      console.log('Response in FRONTEND!!:', JSON.stringify(response.data));
+      setSelectedJob(response.data);
+      console.log('make api call to get job details from workday');
+    } else {
+      console.error(
+        `No job details found for ${job.title} in ${job.company.name}...no ${{
+          ...Object.values(JobSourceEnum),
+        }}`
+      );
     }
   };
 

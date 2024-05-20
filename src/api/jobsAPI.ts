@@ -21,4 +21,19 @@ const fetchJobs = async (companySlug: string) => {
   }
 };
 
+export const fetchTodayJobs = async () => {
+  try {
+    const { data } = await axios.get(
+      `http://localhost:8000/v1/api/jobs/todays-jobs`
+    );
+    if (!data) {
+      throw new Error('Network response was not ok');
+    }
+    return data;
+  } catch (error) {
+    console.error('Error fetching today jobs:', error);
+    return error;
+  }
+};
+
 export default fetchJobs;
