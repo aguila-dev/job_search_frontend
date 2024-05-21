@@ -456,6 +456,11 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -474,7 +479,7 @@ button:focus-visible {
 }
 
 .jobs-list-container {
-  max-height: 80vh;
+  max-height: 75vh;
   flex-grow: 1;
   overflow-y: auto;
 }
@@ -492,7 +497,7 @@ button:focus-visible {
 
 @media (max-width: 530px) {
   .jobs-list-container {
-    max-height: 55vh;
+    max-height: 60vh;
   }
 }
 

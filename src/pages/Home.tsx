@@ -15,11 +15,7 @@ const Home = () => {
   console.log(companyList);
 
   const handleCompanyClick = async (company: any) => {
-    // if (workday) {
-    //   navigate(`/workday/${backend.name}`);
-    //   return;
-    // }
-    navigate(`/${company.slug}`);
+    navigate(`/jobs/${company.slug}`);
     console.log('COMPANY CLICKED', company);
   };
 
@@ -59,41 +55,7 @@ const Home = () => {
                 onClick={() => handleCompanyClick(company)}
               />
             ))}
-        {/* {companyList?.map((company, idx) => (
-          <CompanyNameCard
-            key={idx}
-            company={company}
-            onClick={() => handleCompanyClick(company)}
-          />
-        ))} */}
       </div>
-      {/* <h3 className='text-xl font-semibold text-center'>
-        Greenhouse Companies ({jobBackends.length})
-      </h3> */}
-      {/* <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-        {jobBackends.map(
-          (company) =>
-            company.active && (
-              <CompanyNameCard
-                key={company.title}
-                company={company}
-                onClick={() => handleCompanyClick(company)}
-              />
-            )
-        )}
-      </div>
-      <h3 className='text-xl font-semibold text-center'>
-        Workday Companies ({workdayJobs.length})
-      </h3>
-      <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-        {workdayJobs.map((company) => (
-          <CompanyNameCard
-            key={company.title}
-            company={company}
-            onClick={() => handleCompanyClick(company, true)}
-          />
-        ))}
-      </div> */}
     </div>
   );
 };

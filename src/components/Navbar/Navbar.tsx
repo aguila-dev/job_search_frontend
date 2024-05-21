@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavItem from '../Button/NavItem';
-import { MagnifyingGlassArrowLogo, MagnifyingGlassLogo } from '../Logo/AppLogo';
 
 type NavbarLink = {
   name: string;

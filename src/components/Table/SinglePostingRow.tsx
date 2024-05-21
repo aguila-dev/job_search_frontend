@@ -1,18 +1,34 @@
-import { format } from 'date-fns';
+// // import { format } from 'date-fns';
+// import { formatInTimeZone } from 'date-fns-tz';
 
 // Single posting component (table row)
 const SinglePostingRow: React.FC<{
   job: any;
   onRowClick?: () => void;
-  onToggleApply: (id: number) => void;
+  // onToggleApply: (id: number) => void;
   baseUrl?: string;
   workday?: boolean;
-}> = ({ job, onRowClick, onToggleApply, baseUrl, workday }) => {
-  const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-    onToggleApply(job.id);
+}> = ({ job, onRowClick }) => {
+  const formatDateToLocalTimeZone = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date);
   };
 
+  const formattedDate = formatDateToLocalTimeZone(job.lastUpdatedAt);
+  const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    // onToggleApply(job.id);
+  };
+
+  console.log(
+    'JOBS LAST UPDATED AT:',
+    new Date(job?.lastUpdatedAt).toDateString()
+  );
+  console.log('updated with new Date', formattedDate);
   return (
     <tr
       onClick={onRowClick}
@@ -29,10 +45,10 @@ const SinglePostingRow: React.FC<{
         {job.title}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
-        {format(new Date(job.lastUpdatedAt), 'MM/dd/yyyy')}
+        {formattedDate}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
-        {job.location}
+        {job?.location}
       </td>
       <td className='p-2 border-[1px] border-solid border-[#ddd]'>
         <a

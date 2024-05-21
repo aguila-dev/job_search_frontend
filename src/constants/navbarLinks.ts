@@ -6,12 +6,12 @@ export const NAVBAR_LINKS = [
   },
   {
     name: 'Applied Jobs',
-    path: '/applied-jobs',
+    path: '/profile/applied-jobs',
     active: true,
   },
   {
     name: " Today's Jobs",
-    path: '/todays-jobs',
+    path: '/jobs/todays-jobs',
     active: true,
   },
 ];

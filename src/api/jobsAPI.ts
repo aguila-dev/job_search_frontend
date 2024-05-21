@@ -1,12 +1,15 @@
 // src/api/jobsAPI.js
 import axios from 'axios';
-import { isJobPostedToday } from '../utils/isJobPostedToday';
 import { wait } from '../utils/wait';
 
-const fetchJobs = async (companySlug: string) => {
+const fetchJobs = async (
+  companySlug: string,
+  page: number = 1,
+  searchQuery = ''
+) => {
   try {
     const { data } = await axios.get(
-      `http://localhost:8000/v1/api/jobs/company/${companySlug}`
+      `http://localhost:8000/v1/api/jobs/company/${companySlug}?page=${page}&search=${searchQuery}`
     );
 
     if (!data) {
@@ -21,14 +24,15 @@ const fetchJobs = async (companySlug: string) => {
   }
 };
 
-export const fetchTodayJobs = async () => {
+export const fetchTodayJobs = async (page: number = 1, searchQuery = '') => {
   try {
     const { data } = await axios.get(
-      `http://localhost:8000/v1/api/jobs/todays-jobs`
+      `http://localhost:8000/v1/api/jobs/todays-jobs?page=${page}&search=${searchQuery}`
     );
     if (!data) {
       throw new Error('Network response was not ok');
     }
+
     return data;
   } catch (error) {
     console.error('Error fetching today jobs:', error);

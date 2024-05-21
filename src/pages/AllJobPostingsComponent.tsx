@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import he from 'he';
 import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
-import getBackendUrl from '../utils/getBackendUrl';
-import fetchJobs from '../api/jobsAPI';
+import fetchJobs, { fetchTodayJobs } from '../api/jobsAPI';
 import SinglePostingRow from '../components/Table/SinglePostingRow';
 import { LoadingSpinner } from '../ui';
 import downloadAppliedJobDetails from '../utils/downloadJobDetails';
@@ -12,30 +11,47 @@ import SearchAndSort from '../components/SearchAndSort';
 import { JobSourceEnum } from '../constants';
 // import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
+interface Props {
+  isTodaysJobs?: boolean;
+}
 // Main component
-const GreenhouseCompanyJobsList: React.FC = () => {
+const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const { company } = useParams<{ company: string }>();
   const [jobs, setJobs] = useState<any[]>([]);
   const [data, setData] = useState<any>({});
   const [sortOrder, setSortOrder] = useState('');
+  const [inputQuery, setInputQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  console.log({ isError, searchQuery, inputQuery });
+
   useEffect(() => {
-    const getJobs = async (company: any) => {
+    const getJobs = async () => {
       setIsLoading(true);
       setIsError(false);
 
       try {
-        const jobsData = await fetchJobs(company);
+        let jobsData;
+        if (isTodaysJobs) {
+          jobsData = await fetchTodayJobs(currentPage, searchQuery);
+        } else if (company && !isTodaysJobs) {
+          jobsData = await fetchJobs(company, currentPage, searchQuery);
+        }
         if (!jobsData) {
+          setIsError(true);
           throw new Error('Network response errored out');
         }
+
         const jobs = jobsData.jobs;
+        const totalNumPages = Math.ceil(jobsData.count / 20);
         setData(jobsData);
         setJobs(jobs);
+        setTotalPages(totalNumPages);
       } catch (error) {
         console.error('Error fetching jobs:', error);
         setIsError(true);
@@ -44,10 +60,8 @@ const GreenhouseCompanyJobsList: React.FC = () => {
       }
     };
 
-    if (company) {
-      getJobs(company);
-    }
-  }, [company, navigate]);
+    getJobs();
+  }, [company, navigate, isTodaysJobs, currentPage, searchQuery]);
 
   useEffect(() => {
     if (selectedJob) {
@@ -60,60 +74,60 @@ const GreenhouseCompanyJobsList: React.FC = () => {
     };
   }, [selectedJob]);
 
-  const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // const filteredJobs = jobs.filter((job) =>
+  //   job.title.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
-  const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
-    const dateA = new Date(a.updated_at).getTime();
-    const dateB = new Date(b.updated_at).getTime();
+  // const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
+  //   const dateA = new Date(a.updated_at).getTime();
+  //   const dateB = new Date(b.updated_at).getTime();
 
-    if (sortOrder === 'newest') {
-      return dateB - dateA;
-    } else if (sortOrder === 'oldest') {
-      return dateA - dateB;
-    }
-    return 0;
-  });
+  //   if (sortOrder === 'newest') {
+  //     return dateB - dateA;
+  //   } else if (sortOrder === 'oldest') {
+  //     return dateA - dateB;
+  //   }
+  //   return 0;
+  // });
 
-  const handleApplicationToggle = (job: any) => {
-    const jobId = job.id;
-    const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '{}');
-    if (company) {
-      if (!appliedJobs[company]) {
-        appliedJobs[company] = {};
-      }
+  // const handleApplicationToggle = (job: any) => {
+  //   const jobId = job.id;
+  //   const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '{}');
+  //   if (company) {
+  //     if (!appliedJobs[company]) {
+  //       appliedJobs[company] = {};
+  //     }
 
-      if (appliedJobs[company][jobId]) {
-        delete appliedJobs[company][jobId];
-      } else {
-        const jobToSave = jobs.find((job) => job.id === jobId);
-        if (jobToSave) {
-          const dateApplied = new Date().toISOString().split('T')[0];
-          appliedJobs[company][jobId] = {
-            ...jobToSave,
-            applied: true,
-            appliedDate: dateApplied,
-            status: 'active',
-            considering: true,
-          };
-          const fileContent = `Job ID: ${jobToSave.id}, Title: ${jobToSave.title}, Company: ${company}, Date Applied: ${dateApplied}\n`;
-          downloadAppliedJobDetails(fileContent, `${company}-${jobId}.txt`);
-        }
-      }
+  //     if (appliedJobs[company][jobId]) {
+  //       delete appliedJobs[company][jobId];
+  //     } else {
+  //       const jobToSave = jobs.find((job) => job.id === jobId);
+  //       if (jobToSave) {
+  //         const dateApplied = new Date().toISOString().split('T')[0];
+  //         appliedJobs[company][jobId] = {
+  //           ...jobToSave,
+  //           applied: true,
+  //           appliedDate: dateApplied,
+  //           status: 'active',
+  //           considering: true,
+  //         };
+  //         const fileContent = `Job ID: ${jobToSave.id}, Title: ${jobToSave.title}, Company: ${company}, Date Applied: ${dateApplied}\n`;
+  //         downloadAppliedJobDetails(fileContent, `${company}-${jobId}.txt`);
+  //       }
+  //     }
 
-      localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
+  //     localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
 
-      const updatedJobs = jobs.map((job) => ({
-        ...job,
-        applied: !!appliedJobs[company][job.id],
-        appliedDate: appliedJobs[company][job.id]?.appliedDate,
-        status: appliedJobs[company][job.id]?.status,
-        considering: appliedJobs[company][job.id]?.considering,
-      }));
-      setJobs(updatedJobs);
-    }
-  };
+  //     const updatedJobs = jobs.map((job) => ({
+  //       ...job,
+  //       applied: !!appliedJobs[company][job.id],
+  //       appliedDate: appliedJobs[company][job.id]?.appliedDate,
+  //       status: appliedJobs[company][job.id]?.status,
+  //       considering: appliedJobs[company][job.id]?.considering,
+  //     }));
+  //     setJobs(updatedJobs);
+  //   }
+  // };
 
   function extractJobPath(url: string): string {
     const regex = /\/job\/(.*)/;
@@ -122,9 +136,11 @@ const GreenhouseCompanyJobsList: React.FC = () => {
   }
 
   const fetchJobDetails = async (job: any) => {
-    console.log('JOB', job);
+    console.log('JOB in FETCH DETAILS', job);
+    const jobCompany = company || job.company.slug;
+    console.log('JOB COMPANY:', jobCompany);
     if (
-      company &&
+      jobCompany &&
       job.jobId &&
       job.jobSource.name === JobSourceEnum.GREENHOUSE
     ) {
@@ -133,7 +149,7 @@ const GreenhouseCompanyJobsList: React.FC = () => {
       );
       setSelectedJob(response.data);
     } else if (
-      company &&
+      jobCompany &&
       job.jobId &&
       job.jobSource.name === JobSourceEnum.WORKDAY
     ) {
@@ -150,7 +166,6 @@ const GreenhouseCompanyJobsList: React.FC = () => {
         'http://localhost:8000/v1/api/jobs/workday/individualJob',
         { params: { fullBackendUrl } }
       );
-      console.log('Response in FRONTEND!!:', JSON.stringify(response.data));
       setSelectedJob(response.data);
       console.log('make api call to get job details from workday');
     } else {
@@ -162,18 +177,32 @@ const GreenhouseCompanyJobsList: React.FC = () => {
     }
   };
 
+  const handleSearchSubmit = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1); // Reset to first page on new search
+  };
+
   function handleClickOutside(e: MouseEvent) {
     if ((e.target as HTMLElement).classList.contains('overlay')) {
       setSelectedJob(null);
     }
   }
-
-  console.log('selectedJob:', selectedJob);
+  const handlePaginatedPage = (direction: string) => {
+    if (direction === 'next') {
+      if (currentPage < totalPages) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    }
+  };
 
   return (
     <div className='px-4 w-full'>
       <h2 className='text-center font-semibold text-2xl flex justify-center items-center'>
-        Job Listings for {company}{' '}
+        Job Listings for {isTodaysJobs ? 'Today' : jobs[0]?.company.name ?? ''}{' '}
         <span className='inline-flex justify-center items-center'>
           &#40;
           {jobs?.length ? (
@@ -194,11 +223,7 @@ const GreenhouseCompanyJobsList: React.FC = () => {
           </div>
         </div>
       ) : (
-        <SearchAndSort
-          setSortOrder={setSortOrder}
-          setSearchQuery={setSearchQuery}
-          searchQuery={searchQuery}
-        />
+        <SearchAndSort onSubmitSearch={handleSearchSubmit} />
       )}
       <div className='overflow-x-auto jobs-list-container'>
         <table className='min-w-full mt-4 border-collapse text-xs sm:text-base'>
@@ -217,22 +242,41 @@ const GreenhouseCompanyJobsList: React.FC = () => {
               ? Array.from({ length: 10 }, (_, index) => (
                   <SingleJobPostingSkeletonRow key={index} cols={6} />
                 ))
-              : sortedAndFilteredJobs.map((job: any, jobIndex: number) => (
+              : jobs.map((job: any, jobIndex: number) => (
                   <SinglePostingRow
                     key={jobIndex}
                     job={job}
                     onRowClick={() => fetchJobDetails(job)}
-                    onToggleApply={() => handleApplicationToggle(job)}
+                    // onToggleApply={() => handleApplicationToggle(job)}
                   />
                 ))}
           </tbody>
         </table>
       </div>
+      {/* Pagination section for company postings */}
+      <div className='flex justify-center items-center mt-4'>
+        <button
+          type='button'
+          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
+          disabled={currentPage === 1}
+          onClick={() => handlePaginatedPage('prev')}
+        >
+          Previous
+        </button>
+        <button
+          type='button'
+          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
+          disabled={currentPage === totalPages}
+          onClick={() => handlePaginatedPage('next')}
+        >
+          Next
+        </button>
+      </div>
 
       {selectedJob && (
         <div className='fixed inset-0 z-50 flex justify-end'>
           <div className='overlay fixed inset-0 bg-black opacity-50'></div>
-          <div className='relative w-full md:w-2/3 h-full bg-white shadow-lg p-4 overflow-y-auto'>
+          <div className='relative w-5/6 md:w-2/3 h-full bg-white shadow-lg p-4 overflow-y-auto'>
             <button
               type='button'
               onClick={() => setSelectedJob(null)}
@@ -267,4 +311,4 @@ const GreenhouseCompanyJobsList: React.FC = () => {
   );
 };
 
-export default GreenhouseCompanyJobsList;
+export default AllJobPostingsComponent;

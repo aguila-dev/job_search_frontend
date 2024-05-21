@@ -1,19 +1,19 @@
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
-// import GreenhouseCompanyJobsListBackup from './pages/GreenhouseCompanyJobsListBackup';
-import CompanyJobPostings from './pages/GreenhouseCompanyJobsList';
+import AllJobPostingsComponent from './pages/AllJobPostingsComponent';
 import AppliedJobsComponent from './pages/AppliedJobs';
-// import WorkdayCompanyJobsList from './pages/WorkdayCompanyJobsList';
-import TodaysJobsPostings from './pages/TodaysJobsPostings';
 
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path='/' element={<Home />} />
-      <Route path='/:company' element={<CompanyJobPostings />} />
-      <Route path='/applied-jobs' element={<AppliedJobsComponent />} />
-      {/* <Route path='/workday/:company' element={<WorkdayCompanyJobsList />} /> */}
-      <Route path='/todays-jobs' element={<TodaysJobsPostings />} />
+      <Route path='/jobs/:company' element={<AllJobPostingsComponent />} />
+      <Route path='/profile/applied-jobs' element={<AppliedJobsComponent />} />
+      <Route
+        path='/jobs/todays-jobs'
+        element={<AllJobPostingsComponent isTodaysJobs={true} />}
+      />
+      <Route path='/*' element={<div> Error 404</div>} />
     </Routes>
   );
 };
