@@ -24,10 +24,19 @@ const fetchJobs = async (
   }
 };
 
-export const fetchTodayJobs = async (page: number = 1, searchQuery = '') => {
+export const fetchTodayJobs = async (
+  page: number = 1,
+  searchQuery = '',
+  companyId?: number
+) => {
   try {
+    const params: any = { page, search: searchQuery };
+    if (companyId) {
+      params.companyId = companyId;
+    }
     const { data } = await axios.get(
-      `http://localhost:8000/v1/api/jobs/todays-jobs?page=${page}&search=${searchQuery}`
+      `http://localhost:8000/v1/api/jobs/todays-jobs`,
+      { params }
     );
     if (!data) {
       throw new Error('Network response was not ok');
@@ -36,6 +45,21 @@ export const fetchTodayJobs = async (page: number = 1, searchQuery = '') => {
     return data;
   } catch (error) {
     console.error('Error fetching today jobs:', error);
+    return error;
+  }
+};
+
+export const fetchTodaysCompanies = async (): Promise<any> => {
+  try {
+    const { data } = await axios.get(
+      'http://localhost:8000/v1/api/jobs/todays-jobs/companies'
+    );
+    if (!data) {
+      throw new Error('Network response was not ok');
+    }
+    return data;
+  } catch (error) {
+    console.error('Error fetching companies:', error);
     return error;
   }
 };

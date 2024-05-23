@@ -3,14 +3,25 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import he from 'he';
 import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
-import fetchJobs, { fetchTodayJobs } from '../api/jobsAPI';
+import fetchJobs, {
+  fetchTodayJobs,
+  fetchTodaysCompanies,
+} from '../api/jobsAPI';
 import SinglePostingRow from '../components/Table/SinglePostingRow';
 import { LoadingSpinner } from '../ui';
-import downloadAppliedJobDetails from '../utils/downloadJobDetails';
 import SearchAndSort from '../components/SearchAndSort';
 import { JobSourceEnum } from '../constants';
+import CompanyFilterComponent from '../components/Dropdown/CompanyFilterDropdown';
 // import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
+interface TodayCompany {
+  id: number;
+  name: string;
+}
+interface CompanyData {
+  count: number;
+  companies: TodayCompany[];
+}
 interface Props {
   isTodaysJobs?: boolean;
 }
@@ -19,16 +30,24 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const { company } = useParams<{ company: string }>();
   const [jobs, setJobs] = useState<any[]>([]);
   const [data, setData] = useState<any>({});
-  const [sortOrder, setSortOrder] = useState('');
-  const [inputQuery, setInputQuery] = useState('');
+  // const [sortOrder, setSortOrder] = useState('');
+  // const [inputQuery, setInputQuery] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
+  const [companies, setCompanies] = useState<CompanyData>({
+    count: 0,
+    companies: [],
+  });
+  const [todayCompanySelect, setTodayCompanySelect] = useState<string | null>(
+    null
+  );
+
   const navigate = useNavigate();
-  console.log({ isError, searchQuery, inputQuery });
+  console.log({ isError, searchQuery });
 
   useEffect(() => {
     const getJobs = async () => {
@@ -37,8 +56,17 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
 
       try {
         let jobsData;
+        let companiesData = companies;
         if (isTodaysJobs) {
-          jobsData = await fetchTodayJobs(currentPage, searchQuery);
+          jobsData = await fetchTodayJobs(
+            currentPage,
+            searchQuery,
+            todayCompanySelect ? Number(todayCompanySelect) : undefined
+          );
+          if (companies.companies?.length === 0) {
+            companiesData = await fetchTodaysCompanies();
+            setCompanies(companiesData);
+          }
         } else if (company && !isTodaysJobs) {
           jobsData = await fetchJobs(company, currentPage, searchQuery);
         }
@@ -61,7 +89,14 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
     };
 
     getJobs();
-  }, [company, navigate, isTodaysJobs, currentPage, searchQuery]);
+  }, [
+    company,
+    navigate,
+    isTodaysJobs,
+    currentPage,
+    searchQuery,
+    todayCompanySelect,
+  ]);
 
   useEffect(() => {
     if (selectedJob) {
@@ -73,61 +108,6 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [selectedJob]);
-
-  // const filteredJobs = jobs.filter((job) =>
-  //   job.title.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
-
-  // const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
-  //   const dateA = new Date(a.updated_at).getTime();
-  //   const dateB = new Date(b.updated_at).getTime();
-
-  //   if (sortOrder === 'newest') {
-  //     return dateB - dateA;
-  //   } else if (sortOrder === 'oldest') {
-  //     return dateA - dateB;
-  //   }
-  //   return 0;
-  // });
-
-  // const handleApplicationToggle = (job: any) => {
-  //   const jobId = job.id;
-  //   const appliedJobs = JSON.parse(localStorage.getItem('appliedJobs') || '{}');
-  //   if (company) {
-  //     if (!appliedJobs[company]) {
-  //       appliedJobs[company] = {};
-  //     }
-
-  //     if (appliedJobs[company][jobId]) {
-  //       delete appliedJobs[company][jobId];
-  //     } else {
-  //       const jobToSave = jobs.find((job) => job.id === jobId);
-  //       if (jobToSave) {
-  //         const dateApplied = new Date().toISOString().split('T')[0];
-  //         appliedJobs[company][jobId] = {
-  //           ...jobToSave,
-  //           applied: true,
-  //           appliedDate: dateApplied,
-  //           status: 'active',
-  //           considering: true,
-  //         };
-  //         const fileContent = `Job ID: ${jobToSave.id}, Title: ${jobToSave.title}, Company: ${company}, Date Applied: ${dateApplied}\n`;
-  //         downloadAppliedJobDetails(fileContent, `${company}-${jobId}.txt`);
-  //       }
-  //     }
-
-  //     localStorage.setItem('appliedJobs', JSON.stringify(appliedJobs));
-
-  //     const updatedJobs = jobs.map((job) => ({
-  //       ...job,
-  //       applied: !!appliedJobs[company][job.id],
-  //       appliedDate: appliedJobs[company][job.id]?.appliedDate,
-  //       status: appliedJobs[company][job.id]?.status,
-  //       considering: appliedJobs[company][job.id]?.considering,
-  //     }));
-  //     setJobs(updatedJobs);
-  //   }
-  // };
 
   function extractJobPath(url: string): string {
     const regex = /\/job\/(.*)/;
@@ -198,11 +178,16 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       }
     }
   };
+  const handleCompanySelect = (selectedCompanyId: number) => {
+    setTodayCompanySelect(
+      selectedCompanyId ? selectedCompanyId.toString() : null
+    );
+  };
 
   return (
     <div className='px-4 w-full'>
       <h2 className='text-center font-semibold text-2xl flex justify-center items-center'>
-        Job Listings for {isTodaysJobs ? 'Today' : jobs[0]?.company.name ?? ''}{' '}
+        Job Listings for {isTodaysJobs ? 'Today ' : jobs[0]?.company.name ?? ''}{' '}
         <span className='inline-flex justify-center items-center'>
           &#40;
           {jobs?.length ? (
@@ -223,7 +208,15 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
           </div>
         </div>
       ) : (
-        <SearchAndSort onSubmitSearch={handleSearchSubmit} />
+        <>
+          <SearchAndSort onSubmitSearch={handleSearchSubmit} />
+          {isTodaysJobs && (
+            <CompanyFilterComponent
+              companies={companies}
+              onCompanySelect={handleCompanySelect}
+            />
+          )}
+        </>
       )}
       <div className='overflow-x-auto jobs-list-container'>
         <table className='min-w-full mt-4 border-collapse text-xs sm:text-base'>

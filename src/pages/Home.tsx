@@ -1,7 +1,6 @@
 // src/components/CompanyComponent.js
 
 import { useNavigate } from 'react-router-dom';
-import jobBackends, { workdayJobs } from '../constants/jobUrls';
 import CompanyNameCard from '../components/Cards/CompanyNameCard';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -12,7 +11,6 @@ const Home = () => {
   const [companyList, setCompanyList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  console.log(companyList);
 
   const handleCompanyClick = async (company: any) => {
     navigate(`/jobs/${company.slug}`);
@@ -20,6 +18,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    console.log('Fetching company list...');
     setIsLoading(true);
     const fetchCompanyList = async () => {
       try {

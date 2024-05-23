@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DEFAULT_LOGO from '../../assets/image.png';
-import { SkeletonCardLoader } from '../../ui/JobPostingSkeleton';
 
 const CompanyNameCard = ({ company, onClick }: any) => {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);

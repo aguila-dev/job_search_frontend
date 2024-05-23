@@ -15,6 +15,8 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  console.log('menu open', isMenuOpen);
+  console.log('className of body', document.body.style.overflow);
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
     // Optionally toggle body scroll lock
@@ -23,6 +25,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
 
   const handleClickLink = (path: string) => {
     setIsMenuOpen(false);
+    document.body.style.overflow = 'auto';
     navigate(path);
   };
 

@@ -21,14 +21,7 @@ const SinglePostingRow: React.FC<{
   const formattedDate = formatDateToLocalTimeZone(job.lastUpdatedAt);
   const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    // onToggleApply(job.id);
   };
-
-  console.log(
-    'JOBS LAST UPDATED AT:',
-    new Date(job?.lastUpdatedAt).toDateString()
-  );
-  console.log('updated with new Date', formattedDate);
   return (
     <tr
       onClick={onRowClick}
