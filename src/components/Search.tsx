@@ -14,7 +14,7 @@ const Search: React.FC<{
   return (
     <form
       onSubmit={handleSubmit}
-      className='flex flex-col sm:flex-row justify-between items-center py-2'
+      className='flex flex-col sm:flex-row justify-between items-center py-2 w-full'
     >
       <input
         type='text'

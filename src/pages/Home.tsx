@@ -11,7 +11,6 @@ import Search from '../components/Search';
 const Home = () => {
   const [companyList, setCompanyList] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [inputQuery, setInputQuery] = useState<string>('');
   const navigate = useNavigate();
 
   const handleCompanyClick = async (company: any) => {

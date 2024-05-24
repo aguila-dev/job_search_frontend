@@ -45,9 +45,6 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
     null
   );
 
-  const navigate = useNavigate();
-  // console.log({ isError, searchQuery });
-
   useEffect(() => {
     const getJobs = async () => {
       setIsLoading(true);
@@ -88,14 +85,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
     };
 
     getJobs();
-  }, [
-    company,
-    navigate,
-    isTodaysJobs,
-    currentPage,
-    searchQuery,
-    todayCompanySelect,
-  ]);
+  }, [company, isTodaysJobs, currentPage, searchQuery, todayCompanySelect]);
 
   useEffect(() => {
     if (selectedJob) {
@@ -184,19 +174,26 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       selectedCompanyId ? selectedCompanyId.toString() : null
     );
   };
-
+  console.log({ isLoading, isError });
   return (
     <div className='px-4 w-full'>
       <h2 className='text-center font-semibold text-2xl flex justify-center items-center'>
-        Job Listings for {isTodaysJobs ? 'Today ' : jobs[0]?.company.name ?? ''}{' '}
+        Job Listings for{' '}
+        {isTodaysJobs
+          ? 'Today '
+          : jobs[0]?.company.name
+          ? jobs[0]?.company.name
+          : ''}{' '}
         <span className='inline-flex justify-center items-center'>
           &#40;
           {jobs?.length ? (
             data?.count
-          ) : !isError ? (
-            <LoadingSpinner width='w-6' height='h-6' />
-          ) : (
+          ) : isLoading ? (
+            <LoadingSpinner height='6' width='6' />
+          ) : isError ? (
             ''
+          ) : (
+            0
           )}
           &#41;
         </span>
@@ -233,7 +230,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
           </thead>
           <tbody>
             {isLoading
-              ? Array.from({ length: 10 }, (_, index) => (
+              ? Array.from({ length: 12 }, (_, index) => (
                   <SingleJobPostingSkeletonRow key={index} cols={6} />
                 ))
               : jobs.map((job: any, jobIndex: number) => (
@@ -247,24 +244,29 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         </table>
       </div>
       {/* Pagination section for company postings */}
-      <div className='flex justify-center items-center mt-4'>
-        <button
-          type='button'
-          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed  disabled:hover:border-none'
-          disabled={currentPage === 1}
-          onClick={() => handlePaginatedPage('prev')}
-        >
-          Previous
-        </button>
-        <button
-          type='button'
-          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
-          disabled={currentPage === totalPages}
-          onClick={() => handlePaginatedPage('next')}
-        >
-          Next
-        </button>
-      </div>
+      <section className='flex flex-col justify-center items-center mt-4'>
+        <div>
+          <button
+            type='button'
+            className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed  disabled:hover:border-none'
+            disabled={currentPage === 1}
+            onClick={() => handlePaginatedPage('prev')}
+          >
+            Previous
+          </button>
+          <button
+            type='button'
+            className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
+            disabled={currentPage === totalPages}
+            onClick={() => handlePaginatedPage('next')}
+          >
+            Next
+          </button>
+        </div>
+        <div>
+          {currentPage}/{totalPages}
+        </div>
+      </section>
 
       {selectedJob && (
         <SelectedJobModal
