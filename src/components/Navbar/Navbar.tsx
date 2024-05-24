@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavItem from '../Button/NavItem';
+import { useAppSelector } from '../../redux/store';
 
 type NavbarLink = {
   name: string;
   path: string;
   active?: boolean;
+  requiresAuth?: boolean;
 };
 interface NavbarProps {
   navbarLinks: NavbarLink[];
@@ -14,6 +16,7 @@ interface NavbarProps {
 const Navbar = ({ navbarLinks }: NavbarProps) => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const token = useAppSelector((state) => state.auth.token);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -45,32 +48,36 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         } z-40`}
       >
-        {navbarLinks.map(
-          (link) =>
-            link.active && (
-              <p
-                key={link.name}
-                className='text-xl py-4 cursor-pointer hover:opacity-75'
-                onClick={() => handleClickLink(link.path)}
-              >
-                {link.name}
-              </p>
-            )
-        )}
+        {navbarLinks
+          .filter((link) => (token ? link.active : !link.requiresAuth))
+          .map(
+            (link) =>
+              link.active && (
+                <p
+                  key={link.name}
+                  className='text-xl py-4 cursor-pointer hover:opacity-75'
+                  onClick={() => handleClickLink(link.path)}
+                >
+                  {link.name}
+                </p>
+              )
+          )}
       </div>
 
       {/* Desktop Menu */}
       <div className='hidden md:flex md:flex-col md:items-center md:justify-center md:gap-4'>
-        {navbarLinks.map(
-          (link) =>
-            link.active && (
-              <NavItem
-                key={link.name}
-                link={link}
-                handleClickLink={handleClickLink}
-              />
-            )
-        )}
+        {navbarLinks
+          .filter((link) => (token ? link.active : !link.requiresAuth))
+          .map(
+            (link) =>
+              link.active && (
+                <NavItem
+                  key={link.name}
+                  link={link}
+                  handleClickLink={handleClickLink}
+                />
+              )
+          )}
       </div>
     </nav>
   );
