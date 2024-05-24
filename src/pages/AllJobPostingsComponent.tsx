@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import he from 'he';
 import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
 import fetchJobs, {
   fetchTodayJobs,
@@ -9,9 +8,10 @@ import fetchJobs, {
 } from '../api/jobsAPI';
 import SinglePostingRow from '../components/Table/SinglePostingRow';
 import { LoadingSpinner } from '../ui';
-import SearchAndSort from '../components/SearchAndSort';
+import Search from '../components/Search';
 import { JobSourceEnum } from '../constants';
 import CompanyFilterComponent from '../components/Dropdown/CompanyFilterDropdown';
+import SelectedJobModal from '../components/Modal/SelectedJobModal';
 // import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
 interface TodayCompany {
@@ -30,8 +30,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const { company } = useParams<{ company: string }>();
   const [jobs, setJobs] = useState<any[]>([]);
   const [data, setData] = useState<any>({});
-  // const [sortOrder, setSortOrder] = useState('');
-  // const [inputQuery, setInputQuery] = useState('');
+  const [url, setUrl] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -47,7 +46,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   );
 
   const navigate = useNavigate();
-  console.log({ isError, searchQuery });
+  // console.log({ isError, searchQuery });
 
   useEffect(() => {
     const getJobs = async () => {
@@ -116,9 +115,9 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   }
 
   const fetchJobDetails = async (job: any) => {
-    console.log('JOB in FETCH DETAILS', job);
+    // console.log('JOB in FETCH DETAILS', job);
     const jobCompany = company || job.company.slug;
-    console.log('JOB COMPANY:', jobCompany);
+    // console.log('JOB COMPANY:', jobCompany);
     if (
       jobCompany &&
       job.jobId &&
@@ -134,14 +133,14 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       job.jobSource.name === JobSourceEnum.WORKDAY
     ) {
       console.log('workday job to be implemented');
-      console.log('Job endpoint:', job.company.apiEndpoint);
+      // console.log('Job endpoint:', job.company.apiEndpoint);
       const jobPath = extractJobPath(job.absoluteUrl);
       console.log('Job path:', jobPath);
       const fullBackendUrl = `${job.company.apiEndpoint.replace(
         '/jobs',
         '/job'
       )}/${jobPath}`;
-      console.log('Full URL:', fullBackendUrl);
+
       const response = await axios.get(
         'http://localhost:8000/v1/api/jobs/workday/individualJob',
         { params: { fullBackendUrl } }
@@ -155,6 +154,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         }}`
       );
     }
+    setUrl(job.absoluteUrl);
   };
 
   const handleSearchSubmit = (query: string) => {
@@ -165,6 +165,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   function handleClickOutside(e: MouseEvent) {
     if ((e.target as HTMLElement).classList.contains('overlay')) {
       setSelectedJob(null);
+      setUrl('');
     }
   }
   const handlePaginatedPage = (direction: string) => {
@@ -209,7 +210,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         </div>
       ) : (
         <>
-          <SearchAndSort onSubmitSearch={handleSearchSubmit} />
+          <Search onSubmitSearch={handleSearchSubmit} />
           {isTodaysJobs && (
             <CompanyFilterComponent
               companies={companies}
@@ -240,7 +241,6 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
                     key={jobIndex}
                     job={job}
                     onRowClick={() => fetchJobDetails(job)}
-                    // onToggleApply={() => handleApplicationToggle(job)}
                   />
                 ))}
           </tbody>
@@ -250,7 +250,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       <div className='flex justify-center items-center mt-4'>
         <button
           type='button'
-          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
+          className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed  disabled:hover:border-none'
           disabled={currentPage === 1}
           onClick={() => handlePaginatedPage('prev')}
         >
@@ -267,38 +267,12 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       </div>
 
       {selectedJob && (
-        <div className='fixed inset-0 z-50 flex justify-end'>
-          <div className='overlay fixed inset-0 bg-black opacity-50'></div>
-          <div className='relative w-5/6 md:w-2/3 h-full bg-white shadow-lg p-4 overflow-y-auto'>
-            <button
-              type='button'
-              onClick={() => setSelectedJob(null)}
-              className='fixed top-2 right-4 p-2 w-12 h-12 bg-red-500 text-white rounded-full opacity-50 hover:opacity-90'
-              aria-label='Close'
-            >
-              &times;
-            </button>
-            <div
-              className='job-details-content prose'
-              dangerouslySetInnerHTML={{
-                __html: he.decode(
-                  selectedJob && selectedJob.content
-                    ? selectedJob.content
-                    : selectedJob.jobPostingInfo
-                    ? selectedJob.jobPostingInfo?.jobDescription
-                    : 'No content found'
-                ),
-              }}
-            ></div>
-            <button
-              type='button'
-              onClick={() => setSelectedJob(null)}
-              className='mt-4 p-2 bg-red-500 text-white rounded-lg'
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <SelectedJobModal
+          selectedJob={selectedJob}
+          setSelectedJob={setSelectedJob}
+          url={url}
+          setUrl={setUrl}
+        />
       )}
     </div>
   );

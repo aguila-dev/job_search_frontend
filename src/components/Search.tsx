@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 // Search and sort component
-const SearchAndSort: React.FC<{
+const Search: React.FC<{
   onSubmitSearch: (searchQuery: string) => void;
 }> = ({ onSubmitSearch }) => {
   const [inputQuery, setInputQuery] = useState<string>('');
@@ -29,17 +29,8 @@ const SearchAndSort: React.FC<{
       >
         Search
       </button>
-      {/* <select
-      title='Sort by'
-      onChange={(e) => setSortOrder(e.target.value)}
-      className='ml-0 sm:ml-4 mt-2 sm:mt-0 p-2 border border-gray-300 rounded-lg'
-    >
-      <option value=''>Sort by</option>
-      <option value='newest'>Newest</option>
-      <option value='oldest'>Oldest</option>
-    </select> */}
     </form>
   );
 };
 
-export default SearchAndSort;
+export default Search;

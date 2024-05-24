@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { updateJobProperty } from '../utils/updateJobProperty';
-import SearchAndSort from '../components/SearchAndSort';
+import Search from '../components/Search';
 import JobRow from '../components/Table/JobRow';
 
 // JobTable Component
@@ -160,7 +160,7 @@ const AppliedJobsComponent: React.FC = () => {
       <h2 className='text-center font-semibold text-2xl mb-4'>
         Applied Jobs {appliedJobs.length > 0 && `(${appliedJobs.length})`}
       </h2>
-      <SearchAndSort
+      <Search
         setSortOrder={setSortOrder}
         setSearchQuery={setSearchQuery}
         searchQuery={searchQuery}
