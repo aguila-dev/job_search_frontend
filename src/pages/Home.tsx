@@ -48,7 +48,7 @@ const Home = () => {
   };
 
   return (
-    <div className='w-full flex flex-col items-center justify-start gap-4'>
+    <div className='w-full max-w-6xl flex flex-col items-center justify-start gap-4'>
       <h2 className='text-lg font-bold'>
         Welcome to the job board! Here you can find job listings for different
         companies.
@@ -58,19 +58,21 @@ const Home = () => {
         All Companies ({companyList?.length})
       </h3>
 
-      <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4'>
-        {isLoading
-          ? Array.from({ length: 10 }, (_, index) => (
-              <SkeletonCardLoader key={index} />
-            ))
-          : companyList?.map((company, idx) => (
-              <CompanyNameCard
-                key={idx}
-                company={company}
-                onClick={() => handleCompanyClick(company)}
-              />
-            ))}
-      </div>
+      <section className='w-full overflow-y-auto h-[55dvh] md:h-[65dvh] lg:h-[70dvh] p-2'>
+        <div className='flex-wrap grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'>
+          {isLoading
+            ? Array.from({ length: 10 }, (_, index) => (
+                <SkeletonCardLoader key={index} />
+              ))
+            : companyList?.map((company, idx) => (
+                <CompanyNameCard
+                  key={idx}
+                  company={company}
+                  onClick={() => handleCompanyClick(company)}
+                />
+              ))}
+        </div>
+      </section>
     </div>
   );
 };

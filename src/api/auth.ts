@@ -3,23 +3,33 @@ import axios from 'axios';
 export const loginOrSignup = async (
   email: string,
   password: string,
-  auth: string
+  method: string,
+  firstName?: string,
+  lastName?: string
 ) => {
   try {
-    const { data } = await axios.post(`/v1/api/auth/${auth}`, {
-      email,
-      password,
-    });
+    console.log('Method in auth frontend\n:', method);
+    const { data } = await axios.post(
+      `http://localhost:8000/v1/auth/${method}`,
+      {
+        email,
+        password,
+        firstName,
+        lastName,
+      },
+      { withCredentials: true }
+    );
+    console.log('Data in auth frontend\n:', data);
     return data;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error logging in:', error);
-    return null;
+    throw error;
   }
 };
 
 export const logout = async () => {
   try {
-    await axios.post('/v1/api/auth/logout');
+    await axios.post('http://localhost:8000/v1/auth/logout');
   } catch (error) {
     console.error('Error logging out:', error);
   }

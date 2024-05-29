@@ -1,10 +1,5 @@
 export const NAVBAR_LINKS = [
   {
-    name: 'Login',
-    path: '/auth',
-    active: true,
-  },
-  {
     name: 'Home',
     path: '/',
     active: true,

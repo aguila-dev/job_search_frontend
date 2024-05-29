@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import NavItem from '../Button/NavItem';
-import { useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { logout, logoutCurrentUser } from '../../redux/slices/authSlice';
 
 type NavbarLink = {
   name: string;
@@ -15,8 +16,9 @@ interface NavbarProps {
 
 const Navbar = ({ navbarLinks }: NavbarProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const token = useAppSelector((state) => state.auth.token);
+  const { data } = useAppSelector((state) => state.auth);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -30,8 +32,14 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
     navigate(path);
   };
 
+  const handleLogout = async () => {
+    // Call logoutCurrentUser action
+    console.log('Logout');
+    await dispatch(logout());
+  };
+
   return (
-    <nav className='bg-zinc-500 text-slate-50 font-semibold p-4 z-50'>
+    <nav className='dark-green text-slate-50 font-semibold p-4 z-50 md:w-64'>
       {/* Hamburger Icon */}
       <div className='md:hidden flex justify-end max-h-16'>
         <button
@@ -49,7 +57,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
         } z-40`}
       >
         {navbarLinks
-          .filter((link) => (token ? link.active : !link.requiresAuth))
+          .filter((link) => (data?.auth ? link.active : !link.requiresAuth))
           .map(
             (link) =>
               link.active && (
@@ -65,19 +73,37 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
       </div>
 
       {/* Desktop Menu */}
-      <div className='hidden md:flex md:flex-col md:items-center md:justify-center md:gap-4'>
-        {navbarLinks
-          .filter((link) => (token ? link.active : !link.requiresAuth))
-          .map(
-            (link) =>
-              link.active && (
-                <NavItem
-                  key={link.name}
-                  link={link}
-                  handleClickLink={handleClickLink}
-                />
-              )
-          )}
+      <div className='hidden md:flex md:flex-col justify-between md:gap-4 h-full flex-1'>
+        <div className='flex flex-col gap-4'>
+          {navbarLinks
+            .filter((link) => (data?.auth ? link.active : !link.requiresAuth))
+            .map(
+              (link) =>
+                link.active && (
+                  <NavLink
+                    key={link.name}
+                    to={link.path}
+                    className={({ isActive }) =>
+                      `hover:cursor-pointer px-4 py-2 text-black w-full rounded-lg text-center transition-all duration-300 ease-in-out ${
+                        isActive
+                          ? 'bg-slate-400 bg-opacity-90'
+                          : 'hover:bg-slate-300 hover:bg-opacity-65'
+                      }`
+                    }
+                  >
+                    {link.name}
+                  </NavLink>
+                )
+            )}
+        </div>
+        <button
+          type='button'
+          onClick={handleLogout}
+          // to='/auth'
+          className='hover:cursor-pointer px-4 py-2 text-black w-full rounded-lg text-center transition-all duration-300 ease-in-out hover:bg-slate-300 hover:bg-opacity-65'
+        >
+          Logout
+        </button>
       </div>
     </nav>
   );

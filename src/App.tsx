@@ -1,16 +1,19 @@
-import AppRoutes from './AppRoutes';
-import Navbar from './components/Navbar/Navbar';
-import { NAVBAR_LINKS } from './constants/navbarLinks';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from './redux/store';
+import AppRoutes from './routes/AppRoutes';
+import { me } from './redux/slices/authSlice';
 
 function App() {
-  return (
-    <div className='overflow-auto min-h-screen flex flex-col md:flex-row'>
-      <Navbar navbarLinks={NAVBAR_LINKS} />
-      <main className='w-full flex flex-col gap-4 p-4 flex-1'>
-        <AppRoutes />
-      </main>
-    </div>
-  );
+  const dispatch = useAppDispatch();
+  const { data } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!data?.auth) {
+      dispatch(me());
+    }
+  }, [data]);
+
+  return <AppRoutes />;
 }
 
 export default App;

@@ -1,71 +1,97 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import {
-  loginUser,
-  signupUser,
-  logoutUser,
+  authenticateUser,
+  logoutCurrentUser,
+  me,
 } from '../../redux/slices/authSlice';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const AuthComponent = () => {
   const dispatch = useAppDispatch();
-  const { loading, error, token } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { loading, error, data } = useAppSelector((state) => state.auth);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
   const [isSignup, setIsSignup] = useState<boolean>(false);
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSignup) {
-      dispatch(signupUser({ email, password }));
-    } else {
-      dispatch(loginUser({ email, password }));
-    }
-  };
-
-  const handleLogout = () => {
-    dispatch(logoutUser());
+    console.log('submit form fn');
+    setFormSubmitted(true);
+    let method = isSignup ? 'signup' : 'login';
+    dispatch(authenticateUser({ email, password, method, firstName, lastName }))
+      .then(() => {
+        if (data && data.auth) {
+          navigate('/');
+        }
+      })
+      .catch((err) => {
+        console.log('Error in auth component\n:', err);
+      });
+    // .finally(() => {
+    //   setFormSubmitted(false);
+    // });
   };
 
   return (
-    <div>
-      {token ? (
+    <div className='flex flex-col items-center justify-center h-full flex-1'>
+      <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
+      <form onSubmit={handleSubmit}>
+        {isSignup && (
+          <>
+            <div>
+              <label>First Name:</label>
+              <input
+                placeholder='Jordan'
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label>Last Name:</label>
+              <input
+                placeholder='Walke'
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+            </div>
+          </>
+        )}
         <div>
-          <h2>Welcome</h2>
-          <button onClick={handleLogout}>Logout</button>
+          <label>Email:</label>
+          <input
+            placeholder='jordan@example.com'
+            type='email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-      ) : (
-        <>
-          <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>Email:</label>
-              <input
-                placeholder='jordan@example.com'
-                type='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label>Password:</label>
-              <input
-                type='password'
-                value={password}
-                placeholder='Password'
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type='submit' disabled={loading}>
-              {loading ? 'Loading...' : isSignup ? 'Sign Up' : 'Login'}
-            </button>
-          </form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          <button type='button' onClick={() => setIsSignup((prev) => !prev)}>
-            {isSignup ? 'Switch to Login' : 'Switch to Sign Up'}
-          </button>
-        </>
+        <div>
+          <label>Password:</label>
+          <input
+            type='password'
+            value={password}
+            placeholder='Password'
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type='submit' disabled={loading}>
+          {loading ? 'Loading...' : isSignup ? 'Sign Up' : 'Login'}
+        </button>
+      </form>
+      <button type='button' onClick={() => setIsSignup((prev) => !prev)}>
+        {isSignup ? 'Switch to Login' : 'Switch to Sign Up'}
+      </button>
+      {error && formSubmitted && (
+        <p className='text-red-500'>Invalid Credentials</p>
       )}
     </div>
   );

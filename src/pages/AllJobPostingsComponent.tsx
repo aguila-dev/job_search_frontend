@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
 import fetchJobs, {
@@ -12,7 +12,6 @@ import Search from '../components/Search';
 import { JobSourceEnum } from '../constants';
 import CompanyFilterComponent from '../components/Dropdown/CompanyFilterDropdown';
 import SelectedJobModal from '../components/Modal/SelectedJobModal';
-// import JobTable, { greenhouseColumns } from '../components/Table/JobTable';
 
 interface TodayCompany {
   id: number;
@@ -25,6 +24,7 @@ interface CompanyData {
 interface Props {
   isTodaysJobs?: boolean;
 }
+
 // Main component
 const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const { company } = useParams<{ company: string }>();
@@ -105,17 +105,17 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   }
 
   const fetchJobDetails = async (job: any) => {
-    // console.log('JOB in FETCH DETAILS', job);
     const jobCompany = company || job.company.slug;
-    // console.log('JOB COMPANY:', jobCompany);
     if (
       jobCompany &&
       job.jobId &&
       job.jobSource.name === JobSourceEnum.GREENHOUSE
     ) {
       const response = await axios.get(
-        `${job.company.apiEndpoint}/${job.jobId}`
+        `${job.company.apiEndpoint}/${job.jobId}`,
+        { withCredentials: false }
       );
+
       setSelectedJob(response.data);
     } else if (
       jobCompany &&
