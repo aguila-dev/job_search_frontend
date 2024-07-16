@@ -1,20 +1,22 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import Home from '../pages/Home';
-import AllJobPostingsComponent from '../pages/AllJobPostingsComponent';
-import AppliedJobsComponent from '../pages/AppliedJobs';
-import { useAppSelector } from '../redux/store';
-import ProtectedRoutes from './ProtectedRoutes';
-import AuthComponent from '../components/Auth/AuthComponent';
-import ProtectedLayout from '../layouts/ProtectedLayout';
-import AuthLayout from '../layouts/AuthLayout';
+import { Navigate, Route, Routes } from "react-router-dom";
+import Home from "../pages/Home";
+import AllJobPostingsComponent from "../pages/AllJobPostingsComponent";
+import AppliedJobsComponent from "../pages/AppliedJobs";
+import { useAppSelector } from "../redux/store";
+import ProtectedRoutes from "./ProtectedRoutes";
+import AuthComponent from "../components/Auth/AuthComponent";
+import ProtectedLayout from "../layouts/ProtectedLayout";
+import AuthLayout from "../layouts/AuthLayout";
+import { isDevelopment } from "../utils/developmentEnvironment";
 
 const AppRoutes = () => {
-  const { data, loading } = useAppSelector((state) => state.auth);
+  const { data } = useAppSelector((state) => state.auth);
+
   return (
     <Routes>
-      {!data?.auth ? (
+      {!data?.auth && !isDevelopment ? (
         <Route
-          path='/auth'
+          path="/auth"
           element={
             <AuthLayout>
               <AuthComponent />
@@ -22,11 +24,11 @@ const AppRoutes = () => {
           }
         />
       ) : (
-        <Route path='/auth' element={<Navigate to='/' replace />} />
+        <Route path="/auth" element={<Navigate to="/" replace />} />
       )}
       <Route element={<ProtectedRoutes />}>
         <Route
-          path='/'
+          path="/"
           element={
             <ProtectedLayout>
               <Home />
@@ -34,7 +36,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path='/jobs/:company'
+          path="/jobs/:company"
           element={
             <ProtectedLayout>
               <AllJobPostingsComponent />
@@ -42,7 +44,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path='/profile/applied-jobs'
+          path="/profile/applied-jobs"
           element={
             <ProtectedLayout>
               <AppliedJobsComponent />
@@ -50,7 +52,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path='/jobs/todays-jobs'
+          path="/jobs/todays-jobs"
           element={
             <ProtectedLayout>
               <AllJobPostingsComponent isTodaysJobs={true} />
@@ -59,7 +61,7 @@ const AppRoutes = () => {
         />
       </Route>
 
-      <Route path='/*' element={<div> Error 404</div>} />
+      <Route path="/*" element={<div> Error 404</div>} />
     </Routes>
   );
 };

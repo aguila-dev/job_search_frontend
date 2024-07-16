@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from './redux/store';
-import AppRoutes from './routes/AppRoutes';
-import { me } from './redux/slices/authSlice';
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./redux/store";
+import AppRoutes from "./routes/AppRoutes";
+import { me } from "./redux/slices/authSlice";
 
 function App() {
   const dispatch = useAppDispatch();

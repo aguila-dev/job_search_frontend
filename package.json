@@ -3,6 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Application to track job applications",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aguila-Projects/job_search_frontend.git"
+  },
+  "author": "https://github.com/aguilana",
   "scripts": {
     "dev": "vite",
     "server": "cd server && npm run start",

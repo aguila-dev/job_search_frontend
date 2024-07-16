@@ -1,30 +1,59 @@
-# React + TypeScript + Vite
+# Job Finder App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a very crude application for someone interested in tech and in the process of finding a job
 
-Currently, two official plugins are available:
+## Dev quick start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Run these commands to get started!
 
-## Expanding the ESLint configuration
+1. Install Homebrew (if you don't have it installed already)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```zsh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+2. Install `nvm` (if you don't have it installed already)
+
+```zsh
+brew update
+brew install nvm
+mkdir ~/.nvm
+nano ~/.zshrc
+```
+
+When `nano` opens, add these 2 lines to `.zshrc` and save the file:
+
+```zsh
+NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+```
+
+3. Use nvm to install the latest Node 18 LTS release. Please do not use Node 20 yet.
+
+```zsh
+nvm install lts/hydrogen
+# Subsitute 18.17.1 with whichever version the previous command just installed
+nvm alias default 18.17.1
+```
+
+4. [Install Prettier in your editor](https://prettier.io/docs/en/editors.html) and set it up to auto-format on save. All ILS code must be formatted using Prettier.
+
+5. Finally, install `job-board` locally
+
+```zsh
+npm install
+```
+
+6. Run correct node version
+
+```zsh
+nvm use
+```
+
+7. Run locally
+
+```zsh
+npm run dev
+```
+
+### TECH USED
