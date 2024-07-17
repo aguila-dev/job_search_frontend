@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { SingleJobPostingSkeletonRow } from "../ui/JobPostingSkeleton";
 import fetchJobs, {
   fetchTodayJobs,
   fetchTodaysCompanies,
-} from '../api/jobsAPI';
-import SinglePostingRow from '../components/Table/SinglePostingRow';
-import { LoadingSpinner } from '../ui';
-import Search from '../components/Search';
-import { JobSourceEnum } from '../constants';
-import CompanyFilterComponent from '../components/Dropdown/CompanyFilterDropdown';
-import SelectedJobModal from '../components/Modal/SelectedJobModal';
+} from "../api/jobsAPI";
+import SinglePostingRow from "../components/Table/SinglePostingRow";
+import { LoadingSpinner } from "../ui";
+import Search from "../components/Search";
+import { JobSourceEnum } from "../constants";
+import CompanyFilterComponent from "../components/Dropdown/CompanyFilterDropdown";
+import SelectedJobModal from "../components/Modal/SelectedJobModal";
 
 interface TodayCompany {
   id: number;
@@ -30,8 +30,8 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const { company } = useParams<{ company: string }>();
   const [jobs, setJobs] = useState<any[]>([]);
   const [data, setData] = useState<any>({});
-  const [url, setUrl] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [url, setUrl] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
@@ -68,7 +68,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         }
         if (!jobsData) {
           setIsError(true);
-          throw new Error('Network response errored out');
+          throw new Error("Network response errored out");
         }
 
         const jobs = jobsData.jobs;
@@ -77,7 +77,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         setJobs(jobs);
         setTotalPages(totalNumPages);
       } catch (error) {
-        console.error('Error fetching jobs:', error);
+        console.error("Error fetching jobs:", error);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -89,19 +89,19 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
 
   useEffect(() => {
     if (selectedJob) {
-      document.addEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
     } else {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [selectedJob]);
 
   function extractJobPath(url: string): string {
     const regex = /\/job\/(.*)/;
     const match = url.match(regex);
-    return match ? match[1] : '';
+    return match ? match[1] : "";
   }
 
   const fetchJobDetails = async (job: any) => {
@@ -122,21 +122,21 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       job.jobId &&
       job.jobSource.name === JobSourceEnum.WORKDAY
     ) {
-      console.log('workday job to be implemented');
+      console.log("workday job to be implemented");
       // console.log('Job endpoint:', job.company.apiEndpoint);
       const jobPath = extractJobPath(job.absoluteUrl);
-      console.log('Job path:', jobPath);
+      console.log("Job path:", jobPath);
       const fullBackendUrl = `${job.company.apiEndpoint.replace(
-        '/jobs',
-        '/job'
+        "/jobs",
+        "/job"
       )}/${jobPath}`;
 
       const response = await axios.get(
-        'http://localhost:8000/v1/api/jobs/workday/individualJob',
+        "http://localhost:8000/v1/api/jobs/workday/individualJob",
         { params: { fullBackendUrl } }
       );
       setSelectedJob(response.data);
-      console.log('make api call to get job details from workday');
+      console.log("make api call to get job details from workday");
     } else {
       console.error(
         `No job details found for ${job.title} in ${company}...no ${{
@@ -153,13 +153,13 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   };
 
   function handleClickOutside(e: MouseEvent) {
-    if ((e.target as HTMLElement).classList.contains('overlay')) {
+    if ((e.target as HTMLElement).classList.contains("overlay")) {
       setSelectedJob(null);
-      setUrl('');
+      setUrl("");
     }
   }
   const handlePaginatedPage = (direction: string) => {
-    if (direction === 'next') {
+    if (direction === "next") {
       if (currentPage < totalPages) {
         setCurrentPage(currentPage + 1);
       }
@@ -176,22 +176,22 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   };
   console.log({ isLoading, isError });
   return (
-    <div className='px-4 w-full'>
-      <h2 className='text-center font-semibold text-2xl flex justify-center items-center'>
-        Job Listings for{' '}
+    <div className="px-4 w-full">
+      <h2 className="text-center font-semibold text-2xl flex justify-center items-center">
+        Job Listings for{" "}
         {isTodaysJobs
-          ? 'Today '
+          ? "Today "
           : jobs[0]?.company.name
           ? jobs[0]?.company.name
-          : ''}{' '}
-        <span className='inline-flex justify-center items-center'>
+          : ""}{" "}
+        <span className="inline-flex justify-center items-center">
           &#40;
           {jobs?.length ? (
             data?.count
           ) : isLoading ? (
-            <LoadingSpinner height='6' width='6' />
+            <LoadingSpinner height="6" width="6" />
           ) : isError ? (
-            ''
+            ""
           ) : (
             0
           )}
@@ -200,8 +200,8 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       </h2>
 
       {isError ? (
-        <div className='flex items-start justify-center pt-4'>
-          <div className='text-red-600 bg-white p-4 rounded-lg shadow-lg'>
+        <div className="flex items-start justify-center pt-4">
+          <div className="text-red-600 bg-white p-4 rounded-lg shadow-lg">
             Network error, sorry. Please try again later.
           </div>
         </div>
@@ -216,16 +216,16 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
           )}
         </>
       )}
-      <div className='overflow-x-auto jobs-list-container'>
-        <table className='min-w-full mt-4 border-collapse text-xs sm:text-base'>
+      <div className="overflow-x-auto jobs-list-container">
+        <table className="min-w-full mt-4 border-collapse text-xs sm:text-base">
           <thead>
-            <tr className='bg-[#f4f4f4]'>
-              <th className='border p-2'>Company</th>
-              <th className='border p-2'>Title</th>
-              <th className='border p-2'>Last Updated</th>
-              <th className='border p-2'>Location</th>
-              <th className='border p-2'>Job Link</th>
-              <th className='border p-2'>Applied</th>
+            <tr className="bg-[#f4f4f4] dark:bg-slate-700">
+              <th className="border p-2">Company</th>
+              <th className="border p-2">Title</th>
+              <th className="border p-2">Last Updated</th>
+              <th className="border p-2">Location</th>
+              <th className="border p-2">Job Link</th>
+              <th className="border p-2">Applied</th>
             </tr>
           </thead>
           <tbody>
@@ -244,21 +244,21 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
         </table>
       </div>
       {/* Pagination section for company postings */}
-      <section className='flex flex-col justify-center items-center mt-4'>
+      <section className="flex flex-col justify-center items-center mt-4">
         <div>
           <button
-            type='button'
-            className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed  disabled:hover:border-none'
+            type="button"
+            className="mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed  disabled:hover:border-none"
             disabled={currentPage === 1}
-            onClick={() => handlePaginatedPage('prev')}
+            onClick={() => handlePaginatedPage("prev")}
           >
             Previous
           </button>
           <button
-            type='button'
-            className='mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed'
+            type="button"
+            className="mx-2 px-4 py-2 bg-gray-200 text-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentPage === totalPages}
-            onClick={() => handlePaginatedPage('next')}
+            onClick={() => handlePaginatedPage("next")}
           >
             Next
           </button>

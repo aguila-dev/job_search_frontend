@@ -1,20 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: "media", // or 'media' or 'class
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       width: {
-        '1/3': '33.333333%',
+        "1/3": "33.333333%",
       },
       height: {
-        full: '100%',
+        full: "100%",
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
-}
+  // eslint-disable-next-line no-undef
+  plugins: [require("@tailwindcss/typography")],
+};
