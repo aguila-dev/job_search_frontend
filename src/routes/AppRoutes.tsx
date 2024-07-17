@@ -7,14 +7,13 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import AuthComponent from "../components/Auth/AuthComponent";
 import ProtectedLayout from "../layouts/ProtectedLayout";
 import AuthLayout from "../layouts/AuthLayout";
-import { isDevelopment } from "../utils/developmentEnvironment";
 
 const AppRoutes = () => {
   const { data } = useAppSelector((state) => state.auth);
 
   return (
     <Routes>
-      {!data?.auth && !isDevelopment ? (
+      {!data?.auth ? (
         <Route
           path="/auth"
           element={

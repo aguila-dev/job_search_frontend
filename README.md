@@ -32,8 +32,8 @@ source $(brew --prefix nvm)/nvm.sh
 
 ```zsh
 nvm install lts/hydrogen
-# Subsitute 18.17.1 with whichever version the previous command just installed
-nvm alias default 18.17.1
+# Subsitute 18.20.4 with whichever version the previous command just installed
+nvm alias default 18.20.4
 ```
 
 4. [Install Prettier in your editor](https://prettier.io/docs/en/editors.html) and set it up to auto-format on save. All ILS code must be formatted using Prettier.
@@ -55,5 +55,10 @@ nvm use
 ```zsh
 npm run dev
 ```
+
+### BACKEND
+
+Run your backend server on port 8000
+Steps to get that running:
 
 ### TECH USED
