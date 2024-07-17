@@ -62,5 +62,12 @@ Run your backend server on port 8000
 Steps to get that running:
 
 Need a GPG Key
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format LONG
+
+copy from above:
+go to github and add new GPG key.
+name whatever you want
+paste what you copied there
 
 ### TECH USED
