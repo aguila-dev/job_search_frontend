@@ -61,4 +61,6 @@ npm run dev
 Run your backend server on port 8000
 Steps to get that running:
 
+Need a GPG Key
+
 ### TECH USED
