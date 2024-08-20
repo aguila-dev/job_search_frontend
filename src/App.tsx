@@ -9,10 +9,18 @@ function App() {
   const { data } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
-    if (!data?.auth) {
-      dispatch(me())
+    const fetchMe = async () => {
+      try {
+        await dispatch(me()).unwrap()
+      } catch (err) {
+        console.log('Error fetching user data:', err)
+      }
     }
-  }, [data])
+
+    if (!data?.auth) {
+      fetchMe()
+    }
+  }, [data, dispatch])
 
   return <AppRoutes />
 }

@@ -47,6 +47,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+
     'import/order': [
       'error',
       {
@@ -58,6 +59,8 @@ module.exports = {
         },
       },
     ],
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error', { semi: false }],
+    'no-unused-expressions': 'error',
+    '@typescript-eslint/no-floating-promises': 'off',
   },
 }
