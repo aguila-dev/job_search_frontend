@@ -1,59 +1,60 @@
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import NavItem from '../Button/NavItem';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { logout, logoutCurrentUser } from '../../redux/slices/authSlice';
+import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
+
+import { logout, logoutCurrentUser } from '../../redux/slices/authSlice'
+import { useAppDispatch, useAppSelector } from '../../redux/store'
+import NavItem from '../Button/NavItem'
 
 type NavbarLink = {
-  name: string;
-  path: string;
-  active?: boolean;
-  requiresAuth?: boolean;
-};
+  name: string
+  path: string
+  active?: boolean
+  requiresAuth?: boolean
+}
 interface NavbarProps {
-  navbarLinks: NavbarLink[];
+  navbarLinks: NavbarLink[]
 }
 
 const Navbar = ({ navbarLinks }: NavbarProps) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { data } = useAppSelector((state) => state.auth)
 
   const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen(!isMenuOpen)
     // Optionally toggle body scroll lock
-    document.body.style.overflow = isMenuOpen ? 'auto' : 'hidden';
-  };
+    document.body.style.overflow = isMenuOpen ? 'auto' : 'hidden'
+  }
 
   const handleClickLink = (path: string) => {
-    setIsMenuOpen(false);
-    document.body.style.overflow = 'auto';
-    navigate(path);
-  };
+    setIsMenuOpen(false)
+    document.body.style.overflow = 'auto'
+    navigate(path)
+  }
 
   const handleLogout = async () => {
     // Call logoutCurrentUser action
-    console.log('Logout');
-    await dispatch(logout());
-  };
+    console.log('Logout')
+    await dispatch(logout())
+  }
 
   return (
-    <nav className='dark-green text-slate-50 font-semibold p-4 z-50 md:w-64'>
+    <nav className="dark-green z-50 p-4 font-semibold text-slate-50 md:w-64">
       {/* Hamburger Icon */}
-      <div className='md:hidden flex justify-end max-h-16'>
+      <div className="flex max-h-16 justify-end md:hidden">
         <button
-          type='button'
+          type="button"
           onClick={handleMenuToggle}
-          className='text-3xl z-50 text-black focus:outline-none flex items-center justify-center w-12 h-12'
+          className="z-50 flex h-12 w-12 items-center justify-center text-3xl text-black focus:outline-none"
         >
           {isMenuOpen ? <span>&times;</span> : <span>&#9776;</span>}
         </button>
       </div>
       {/* Fullscreen Menu for Mobile */}
       <div
-        className={`fixed inset-0 bg-zinc-700 flex flex-col items-center justify-center transition-opacity duration-300 ${
-          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        className={`fixed inset-0 flex flex-col items-center justify-center bg-zinc-700 transition-opacity duration-300 ${
+          isMenuOpen ? 'visible opacity-100' : 'invisible opacity-0'
         } z-40`}
       >
         {navbarLinks
@@ -63,7 +64,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
               link.active && (
                 <p
                   key={link.name}
-                  className='text-xl py-4 cursor-pointer hover:opacity-75'
+                  className="cursor-pointer py-4 text-xl hover:opacity-75"
                   onClick={() => handleClickLink(link.path)}
                 >
                   {link.name}
@@ -73,8 +74,8 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
       </div>
 
       {/* Desktop Menu */}
-      <div className='hidden md:flex md:flex-col justify-between md:gap-4 h-full flex-1'>
-        <div className='flex flex-col gap-4'>
+      <div className="hidden h-full flex-1 justify-between md:flex md:flex-col md:gap-4">
+        <div className="flex flex-col gap-4">
           {navbarLinks
             .filter((link) => (data?.auth ? link.active : !link.requiresAuth))
             .map(
@@ -84,7 +85,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
                     key={link.name}
                     to={link.path}
                     className={({ isActive }) =>
-                      `hover:cursor-pointer px-4 py-2 text-black w-full rounded-lg text-center transition-all duration-300 ease-in-out ${
+                      `w-full rounded-lg px-4 py-2 text-center text-black transition-all duration-300 ease-in-out hover:cursor-pointer ${
                         isActive
                           ? 'bg-slate-400 bg-opacity-90'
                           : 'hover:bg-slate-300 hover:bg-opacity-65'
@@ -97,16 +98,16 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
             )}
         </div>
         <button
-          type='button'
+          type="button"
           onClick={handleLogout}
           // to='/auth'
-          className='hover:cursor-pointer px-4 py-2 text-black w-full rounded-lg text-center transition-all duration-300 ease-in-out hover:bg-slate-300 hover:bg-opacity-65'
+          className="w-full rounded-lg px-4 py-2 text-center text-black transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-slate-300 hover:bg-opacity-65"
         >
           Logout
         </button>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

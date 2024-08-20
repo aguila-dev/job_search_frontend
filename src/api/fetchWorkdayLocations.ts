@@ -9,17 +9,17 @@ const fetchWorkdayLocations = async (company: string): Promise<any> => {
           Accept: 'application/json',
         },
       }
-    );
+    )
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`HTTP error! Status: ${response.status}`)
     }
-    console.log('response', response);
-    return response.json();
+    console.log('response', response)
+    return response.json()
   } catch (error) {
-    console.error('Failed to fetch locations: ', error);
-    throw error;
+    console.error('Failed to fetch locations: ', error)
+    throw error
   }
-};
+}
 
-export default fetchWorkdayLocations;
+export default fetchWorkdayLocations

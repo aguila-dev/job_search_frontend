@@ -1,13 +1,13 @@
 interface LoadingSpinnerProps {
-  width: string;
-  height: string;
+  width: string
+  height: string
 }
 const LoadingSpinner = ({ width, height }: LoadingSpinnerProps) => {
   return (
     <span
-      className={`spinner inline-block ${width} ${height} border-4 border-gray-400 rounded-full border-t-white animate-spin`}
+      className={`spinner inline-block ${width} ${height} animate-spin rounded-full border-4 border-gray-400 border-t-white`}
     ></span>
-  );
-};
+  )
+}
 
-export default LoadingSpinner;
+export default LoadingSpinner

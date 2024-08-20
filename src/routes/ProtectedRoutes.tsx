@@ -1,10 +1,11 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useAppSelector } from "../redux/store";
+import { Navigate, Outlet } from 'react-router-dom'
+
+import { useAppSelector } from '../redux/store'
 
 const ProtectedRoute = () => {
-  const { data } = useAppSelector((state) => state.auth);
+  const { data } = useAppSelector((state) => state.auth)
 
-  return data?.auth ? <Outlet /> : <Navigate to="/auth" />;
-};
+  return data?.auth ? <Outlet /> : <Navigate to="/auth" />
+}
 
-export default ProtectedRoute;
+export default ProtectedRoute

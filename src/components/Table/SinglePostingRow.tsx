@@ -1,50 +1,50 @@
 // // import { format } from 'date-fns';
 // import { formatInTimeZone } from 'date-fns-tz';
-import cn from "classnames";
+import cn from 'classnames'
 // Single posting component (table row)
 const SinglePostingRow: React.FC<{
-  job: any;
-  onRowClick?: () => void;
+  job: any
+  onRowClick?: () => void
   // onToggleApply: (id: number) => void;
-  baseUrl?: string;
-  workday?: boolean;
+  baseUrl?: string
+  workday?: boolean
 }> = ({ job, onRowClick }) => {
   const formatDateToLocalTimeZone = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(date);
-  };
+    const date = new Date(dateString)
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date)
+  }
 
-  const formattedDate = formatDateToLocalTimeZone(job.lastUpdatedAt);
+  const formattedDate = formatDateToLocalTimeZone(job.lastUpdatedAt)
   const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-  };
+    e.stopPropagation()
+  }
   return (
     <tr
       onClick={onRowClick}
-      className={cn("cursor-pointer", {
-        "bg-green-200": job?.applied,
-        "hover:bg-gray-100 dark:hover:bg-gray-700": !job?.applied,
+      className={cn('cursor-pointer', {
+        'bg-green-200': job?.applied,
+        'hover:bg-gray-100 dark:hover:bg-gray-700': !job?.applied,
       })}
     >
       {job?.company ? (
-        <td className="p-2 border-[1px] border-solid border-[#ddd]">
+        <td className="border-[1px] border-solid border-[#ddd] p-2">
           {job.company.name}
         </td>
       ) : null}
-      <td className="p-2 border-[1px] border-solid border-[#ddd]">
+      <td className="border-[1px] border-solid border-[#ddd] p-2">
         {job.title}
       </td>
-      <td className="p-2 border-[1px] border-solid border-[#ddd]">
+      <td className="border-[1px] border-solid border-[#ddd] p-2">
         {formattedDate}
       </td>
-      <td className="p-2 border-[1px] border-solid border-[#ddd]">
+      <td className="border-[1px] border-solid border-[#ddd] p-2">
         {job?.location}
       </td>
-      <td className="p-2 border-[1px] border-solid border-[#ddd]">
+      <td className="border-[1px] border-solid border-[#ddd] p-2">
         <a
           href={job.absoluteUrl}
           target="_blank"
@@ -54,7 +54,7 @@ const SinglePostingRow: React.FC<{
           Link
         </a>
       </td>
-      <td className="p-2 border-[1px] border-solid border-[#ddd]">
+      <td className="border-[1px] border-solid border-[#ddd] p-2">
         <label className="flex items-center space-x-2" />
         <input
           type="checkbox"
@@ -66,7 +66,7 @@ const SinglePostingRow: React.FC<{
         />
       </td>
     </tr>
-  );
-};
+  )
+}
 
-export default SinglePostingRow;
+export default SinglePostingRow

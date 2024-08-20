@@ -1,16 +1,16 @@
-import React from 'react';
+import React from 'react'
 
 interface TodayCompany {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 interface CompanyData {
-  count: number;
-  companies: TodayCompany[];
+  count: number
+  companies: TodayCompany[]
 }
 interface CompanyFilterProps {
-  companies: CompanyData;
-  onCompanySelect: (companyId: number) => void;
+  companies: CompanyData
+  onCompanySelect: (companyId: number) => void
 }
 
 const CompanyFilterComponent: React.FC<CompanyFilterProps> = ({
@@ -19,18 +19,18 @@ const CompanyFilterComponent: React.FC<CompanyFilterProps> = ({
 }) => {
   return (
     <select
-      title='Select a company'
+      title="Select a company"
       onChange={(e) => onCompanySelect(Number(e.target.value))}
-      className='min-h-8 bg-slate-100 w-full sm:w-1/2 rounded-lg px-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50'
+      className="min-h-8 w-full rounded-lg bg-slate-100 px-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 sm:w-1/2"
     >
-      <option value=''>Select a company</option>
+      <option value="">Select a company</option>
       {companies?.companies?.map((company) => (
         <option key={company.id} value={company.id}>
           {company.name}
         </option>
       ))}
     </select>
-  );
-};
+  )
+}
 
-export default CompanyFilterComponent;
+export default CompanyFilterComponent

@@ -1,15 +1,16 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import Home from "../pages/Home";
-import AllJobPostingsComponent from "../pages/AllJobPostingsComponent";
-import AppliedJobsComponent from "../pages/AppliedJobs";
-import { useAppSelector } from "../redux/store";
-import ProtectedRoutes from "./ProtectedRoutes";
-import AuthComponent from "../components/Auth/AuthComponent";
-import ProtectedLayout from "../layouts/ProtectedLayout";
-import AuthLayout from "../layouts/AuthLayout";
+import { Navigate, Route, Routes } from 'react-router-dom'
+
+import ProtectedRoutes from './ProtectedRoutes'
+import AuthComponent from '../components/Auth/AuthComponent'
+import AuthLayout from '../layouts/AuthLayout'
+import ProtectedLayout from '../layouts/ProtectedLayout'
+import AllJobPostingsComponent from '../pages/AllJobPostingsComponent'
+import AppliedJobsComponent from '../pages/AppliedJobs'
+import Home from '../pages/Home'
+import { useAppSelector } from '../redux/store'
 
 const AppRoutes = () => {
-  const { data } = useAppSelector((state) => state.auth);
+  const { data } = useAppSelector((state) => state.auth)
 
   return (
     <Routes>
@@ -62,7 +63,7 @@ const AppRoutes = () => {
 
       <Route path="/*" element={<div> Error 404</div>} />
     </Routes>
-  );
-};
+  )
+}
 
-export default AppRoutes;
+export default AppRoutes

@@ -1,19 +1,19 @@
 // fetchWorkdayAPI.ts
 
 const createQueryString = (baseURL: string, params: any) => {
-  const url = new URL(baseURL);
+  const url = new URL(baseURL)
   Object.keys(params).forEach((key) => {
     if (Array.isArray(params[key])) {
       // Use the `locations[]` notation if backend is configured to handle arrays this way
       params[key].forEach((value: any) =>
         url.searchParams.append(`${key}[]`, value)
-      );
+      )
     } else {
-      url.searchParams.append(key, params[key]);
+      url.searchParams.append(key, params[key])
     }
-  });
-  return url;
-};
+  })
+  return url
+}
 
 /**
  * Fetch job listings from the Workday API.
@@ -31,10 +31,7 @@ const fetchWorkdayAPI = async (
   selectedLocations?: any
 ): Promise<any> => {
   try {
-    console.log(
-      'selectedLocations in fetchWORKDAY!!! >>>\n',
-      selectedLocations
-    );
+    console.log('selectedLocations in fetchWORKDAY!!! >>>\n', selectedLocations)
     const queryURL = createQueryString(
       `http://localhost:8000/v1/api/jobs/${company}`,
       {
@@ -44,25 +41,25 @@ const fetchWorkdayAPI = async (
         locations: selectedLocations.locations,
         locationCountry: selectedLocations.locationCountry,
       }
-    );
-    console.log('queryURL', queryURL);
+    )
+    console.log('queryURL', queryURL)
     const response = await fetch(queryURL, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`HTTP error! Status: ${response.status}`)
     }
 
-    return response.json();
+    return response.json()
   } catch (error) {
-    console.error('Failed to fetch job listings: ', error);
-    return false;
+    console.error('Failed to fetch job listings: ', error)
+    return false
   }
-};
+}
 
-export default fetchWorkdayAPI;
+export default fetchWorkdayAPI
