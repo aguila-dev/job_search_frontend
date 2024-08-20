@@ -71,3 +71,9 @@ name whatever you want
 paste what you copied there
 
 ### TECH USED
+- react frontend w/typescript
+- redux toolkit for state management
+- axios for api fetching
+
+#### TODO
+[] - set up docker and containerization
