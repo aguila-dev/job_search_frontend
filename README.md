@@ -76,4 +76,4 @@ paste what you copied there
 - axios for api fetching
 
 #### TODO
-[] - set up docker and containerization
+[] set up docker and containerization
