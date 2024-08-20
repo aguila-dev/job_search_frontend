@@ -1,29 +1,35 @@
-import { useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import {
-  authenticateUser,
-  logoutCurrentUser,
-  me,
-} from '../../redux/slices/authSlice'
+import { AUTH_INPUT_CONFIG } from '../../constants/authInputConfig'
+import { authenticateUser } from '../../redux/slices/authSlice'
 import { useAppDispatch, useAppSelector } from '../../redux/store'
+import AuthInput from '../Input/AuthInput'
 
 const AuthComponent = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { loading, error, data } = useAppSelector((state) => state.auth)
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [firstName, setFirstName] = useState<string>('')
-  const [lastName, setLastName] = useState<string>('')
-  const [isSignup, setIsSignup] = useState<boolean>(false)
-  const [formSubmitted, setFormSubmitted] = useState<boolean>(false)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    confirmPassword: '',
+  })
+  const [isSignup, setIsSignup] = useState(false)
+  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const isConfirmPasswordDisabled = formData.password.length < 6
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit form fn')
     setFormSubmitted(true)
+
     const method = isSignup ? 'signup' : 'login'
+    const { email, password, firstName, lastName } = formData
+
     dispatch(authenticateUser({ email, password, method, firstName, lastName }))
       .then(() => {
         if (data && data.auth) {
@@ -31,68 +37,75 @@ const AuthComponent = () => {
         }
       })
       .catch((err) => {
-        console.log('Error in auth component\n:', err)
+        console.log('Error in auth component:', err)
+        setErrorMessage('Invalid Credentials')
       })
-    // .finally(() => {
-    //   setFormSubmitted(false);
-    // });
+      .finally(() => {
+        setFormSubmitted(false)
+      })
   }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
+    setErrorMessage('')
+  }
+
+  const renderInput = (
+    label: string,
+    name: string,
+    type: string,
+    placeholder: string,
+    required: boolean = true
+  ) => (
+    <div className="mx-auto w-2/3 min-w-32">
+      <AuthInput
+        label={label}
+        name={name}
+        type={type}
+        placeholder={placeholder}
+        value={formData[name as keyof typeof formData]}
+        onChange={handleInputChange}
+        required={required}
+        error={formSubmitted && !formData[name as keyof typeof formData]}
+        helperText={`${label} is required`}
+        disabled={name === 'confirmPassword' && isConfirmPasswordDisabled}
+      />
+    </div>
+  )
 
   return (
     <div className="flex h-full flex-1 flex-col items-center justify-center">
       <h2>{isSignup ? 'Sign Up' : 'Login'}</h2>
-      <form onSubmit={handleSubmit}>
-        {isSignup && (
-          <>
-            <div>
-              <label>First Name:</label>
-              <input
-                placeholder="Jordan"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <label>Last Name:</label>
-              <input
-                placeholder="Walke"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
-          </>
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full flex-col items-center justify-center gap-4 text-white"
+      >
+        {AUTH_INPUT_CONFIG.filter(
+          (input) => !input.showOnSignup || (input.showOnSignup && isSignup)
+        ).map((input) =>
+          renderInput(
+            input.label,
+            input.name,
+            input.type,
+            input.placeholder,
+            input.required
+          )
         )}
-        <div>
-          <label>Email:</label>
-          <input
-            placeholder="jordan@example.com"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+
         <button type="submit" disabled={loading}>
           {loading ? 'Loading...' : isSignup ? 'Sign Up' : 'Login'}
         </button>
       </form>
-      <button type="button" onClick={() => setIsSignup((prev) => !prev)}>
+      <button
+        className="mt-4 px-4 py-2"
+        type="button"
+        onClick={() => setIsSignup((prev) => !prev)}
+      >
         {isSignup ? 'Switch to Login' : 'Switch to Sign Up'}
       </button>
-      {error && formSubmitted && (
-        <p className="text-red-500">Invalid Credentials</p>
+      {(error || errorMessage) && formSubmitted && (
+        <p className="text-red-500">{errorMessage}</p>
       )}
     </div>
   )
