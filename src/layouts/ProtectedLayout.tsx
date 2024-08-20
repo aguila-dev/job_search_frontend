@@ -1,6 +1,6 @@
-import Navbar from '../components/Navbar/Navbar';
-import { NAVBAR_LINKS } from '../constants/navbarLinks';
-import { LayoutProps } from '../interface/ILayout';
+import Navbar from '../components/Navbar/Navbar'
+import { NAVBAR_LINKS } from '../constants/navbarLinks'
+import { LayoutProps } from '../interface/ILayout'
 
 /**
  * ProtectedLayout.tsx file for handling protected routes
@@ -9,11 +9,11 @@ import { LayoutProps } from '../interface/ILayout';
 
 const ProtectedLayout = ({ children }: LayoutProps) => {
   return (
-    <div className='h-screen flex flex-col md:flex-row'>
+    <div className="flex h-screen flex-col md:flex-row">
       <Navbar navbarLinks={NAVBAR_LINKS} />
-      <main className='w-full flex flex-col gap-4 p-4 flex-1'>{children}</main>
+      <main className="flex w-full flex-1 flex-col gap-4 p-4">{children}</main>
     </div>
-  );
-};
+  )
+}
 
-export default ProtectedLayout;
+export default ProtectedLayout

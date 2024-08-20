@@ -2,7 +2,7 @@ const ROUTES = {
   HOME: '/',
   ABOUT: '/about',
   CONTACT: '/contact',
-};
+}
 
 const API = {
   BASE_URL: 'http://localhost:8000/v1/api',
@@ -15,11 +15,11 @@ const API = {
     TODAY: '/todays-jobs',
   },
   APPLICATIONS: '/applications',
-};
+}
 
 enum JobSourceEnum {
   GREENHOUSE = 'greenhouse',
   WORKDAY = 'workday',
 }
 
-export { ROUTES, API, JobSourceEnum };
+export { ROUTES, API, JobSourceEnum }

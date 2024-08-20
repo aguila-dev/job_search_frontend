@@ -1,6 +1,6 @@
-const link = 'https://boards-api.greenhouse.io/v1/boards';
-import AIRBNB_LOGO from '../assets/logos/airbnb.svg';
-console.log(AIRBNB_LOGO);
+const link = 'https://boards-api.greenhouse.io/v1/boards'
+import AIRBNB_LOGO from '../assets/logos/airbnb.svg'
+console.log(AIRBNB_LOGO)
 
 /**
  * Job backend URLs
@@ -271,9 +271,9 @@ const jobBackends: JobData[] = [
     url: `${link}/zwift/jobs`,
     active: true,
   },
-];
+]
 
-jobBackends.sort((a, b) => a.title.localeCompare(b.title));
+jobBackends.sort((a, b) => a.title.localeCompare(b.title))
 
 /**
  * Workday job URLs
@@ -328,8 +328,8 @@ export const workdayJobs: JobData[] = [
     name: 'capitalone',
     url: 'https://capitalone.wd1.myworkdayjobs.com/Capital_One',
   },
-];
+]
 
-workdayJobs.sort((a, b) => a.title.localeCompare(b.title));
+workdayJobs.sort((a, b) => a.title.localeCompare(b.title))
 
-export default jobBackends;
+export default jobBackends

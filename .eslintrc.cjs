@@ -1,3 +1,4 @@
+const path = require('path')
 module.exports = {
   root: true,
   env: {
@@ -35,6 +36,9 @@ module.exports = {
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.eslint.json',
+  },
   plugins: ['react-refresh', 'prettier', 'import'],
   rules: {
     'react/react-in-jsx-scope': 'off',
