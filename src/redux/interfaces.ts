@@ -1,10 +1,12 @@
-interface UserState {
+export interface UserState {
+  id: number
   email: string
   firstName: string
   lastName: string
+  role: string
   authenticated: boolean
 }
-interface AuthTokenState {
+export interface AuthTokenState {
   token: string
   auth: UserState | null
 }
