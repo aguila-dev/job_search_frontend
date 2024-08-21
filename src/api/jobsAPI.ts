@@ -1,8 +1,6 @@
 // src/api/jobsAPI.js
 import axios from 'axios'
 
-import { wait } from '../utils/wait'
-
 axios.defaults.withCredentials = true
 
 const fetchJobs = async (

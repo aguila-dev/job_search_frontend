@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { logout, logoutCurrentUser } from '../../redux/slices/authSlice'
+import { logout } from '../../redux/slices/authSlice'
 import { useAppDispatch, useAppSelector } from '../../redux/store'
-import NavItem from '../Button/NavItem'
+// import NavItem from '../Button/NavItem'
 
 type NavbarLink = {
   name: string

@@ -1,13 +1,13 @@
+import AuthComponent from '@/components/Auth/AuthComponent'
+import AuthLayout from '@/layouts/AuthLayout'
+import ProtectedLayout from '@/layouts/ProtectedLayout'
+import AllJobPostingsComponent from '@/pages/AllJobPostingsComponent'
+import AppliedJobsComponent from '@/pages/AppliedJobs'
+import Home from '@/pages/Home'
+import { useAppSelector } from '@/redux/store'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import ProtectedRoutes from './ProtectedRoutes'
-import AuthComponent from '../components/Auth/AuthComponent'
-import AuthLayout from '../layouts/AuthLayout'
-import ProtectedLayout from '../layouts/ProtectedLayout'
-import AllJobPostingsComponent from '../pages/AllJobPostingsComponent'
-import AppliedJobsComponent from '../pages/AppliedJobs'
-import Home from '../pages/Home'
-import { useAppSelector } from '../redux/store'
 
 const AppRoutes = () => {
   const { data } = useAppSelector((state) => state.auth)

@@ -1,3 +1,4 @@
+import { Job, JobTableProps } from '@/interface/IJobs'
 import { useEffect, useState } from 'react'
 
 import Search from '../components/Search'
@@ -30,7 +31,7 @@ const JobTable: React.FC<JobTableProps> = ({
       </tr>
     </thead>
     <tbody>
-      {jobs.map((job, index) => (
+      {jobs.map((job: any, index: number) => (
         <JobRow
           key={job.id + index}
           job={job}

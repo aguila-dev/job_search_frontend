@@ -2,7 +2,7 @@
 
 <!-- Describe the modifications made and reasoning behind them. -->
 
-**JIRA Ticket:** https://redventures.atlassian.net/browse/
+**Ticket:**
 **Figma:**
 
 ## 🧪 Testing Guidelines

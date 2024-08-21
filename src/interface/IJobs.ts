@@ -1,19 +1,19 @@
-interface JobData {
+export interface JobData {
   title: string
   name: string
   url: string
   active?: boolean
   logo?: unknown
 }
-interface CompanyNameCardProps {
+export interface CompanyNameCardProps {
   company: JobData
   onClick: () => void
 }
-interface AppliedJobs {
+export interface AppliedJobs {
   [key: string]: JobData
 }
 
-interface Job {
+export interface Job {
   company: string
   title: string
   location: { name?: string }
@@ -26,7 +26,7 @@ interface Job {
   id: any
   status?: string
 }
-interface JobRowProps {
+export interface JobRowProps {
   job: Job
   handleAppliedDateChange: (
     company: string,
@@ -41,7 +41,7 @@ interface JobRowProps {
   ) => void
 }
 // Define Props for the JobTable Component
-interface JobTableProps {
+export interface JobTableProps {
   jobs: Job[]
   handleAppliedDateChange: (
     company: string,

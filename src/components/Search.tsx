@@ -2,13 +2,18 @@ import { useState } from 'react'
 
 // Search and sort component
 const Search: React.FC<{
-  onSubmitSearch: (searchQuery: string) => void
+  onSubmitSearch?: (searchQuery: string) => void
+  setSortOrder?: React.Dispatch<React.SetStateAction<string>>
+  setSearchQuery?: React.Dispatch<React.SetStateAction<string>>
+  searchQuery?: string
 }> = ({ onSubmitSearch }) => {
   const [inputQuery, setInputQuery] = useState<string>('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmitSearch(inputQuery)
+    if (onSubmitSearch) {
+      onSubmitSearch(inputQuery)
+    }
   }
 
   return (

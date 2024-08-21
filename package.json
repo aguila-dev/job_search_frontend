@@ -53,8 +53,9 @@
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "husky": "^9.1.5",
+    "husky": "^8.0.3",
     "jest": "^29.7.0",
+    "lint-staged": "^15.2.9",
     "nodemon": "^3.1.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
@@ -62,7 +63,15 @@
     "tailwindcss": "^3.4.3",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
+    "tsc-files": "^1.1.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "sh -c 'tsc-files --noEmit $(find ./src -name *.d.ts ! -path \"./src/.*/*\") $0 $@'",
+      "prettier --write"
+    ]
   }
 }
