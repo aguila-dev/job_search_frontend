@@ -8,10 +8,11 @@ import ProtectedRoutes from './ProtectedRoutes'
 import { useAppSelector } from './redux/store'
 
 const AppRoutes = () => {
-  const { token, loading, error } = useAppSelector((state) => state.auth)
+  const { data } = useAppSelector((state) => state.auth)
+  console.log('Data in AppRoutes:', data)
   return (
     <Routes>
-      {!token ? (
+      {!data || !data.token ? (
         <>
           <Route path="/auth" element={<AuthComponent />} />
           <Route path="/*" element={<Navigate to="/auth" replace />} />
