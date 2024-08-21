@@ -1,3 +1,4 @@
+import { JobRowProps } from '@/interface/IJobs'
 import { useState } from 'react'
 
 // JobRow Component

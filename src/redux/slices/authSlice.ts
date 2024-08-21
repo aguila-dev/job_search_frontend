@@ -1,10 +1,9 @@
+import { loginOrSignup } from '@/api/auth'
+import { AuthState, UserState } from '@/redux/interfaces'
+import { RootState } from '@/redux/store'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
-
-import { loginOrSignup } from '../../api/auth'
-import { AuthState, UserState } from '../interfaces'
-import { RootState } from '../store'
 
 axios.defaults.withCredentials = true
 
@@ -64,25 +63,25 @@ export const me = createAsyncThunk(
     try {
       const state = getState() as RootState
       console.log('State in me thunk:', state)
-      let accessToken = state.auth.data?.token as string
+      const accessToken = state.auth.data?.token as string
       console.log('Access token before /me request:', accessToken)
 
-      if (!accessToken) {
-        console.log('No access token found, attempting to refresh...')
-        const { data } = await axios.post<{ accessToken: string }>(
-          'http://localhost:8000/v1/auth/refresh-token',
-          null,
-          {
-            withCredentials: true,
-          }
-        )
+      // if (!accessToken) {
+      //   console.log('No access token found, attempting to refresh...')
+      //   const { data } = await axios.post<{ accessToken: string }>(
+      //     'http://localhost:8000/v1/auth/refresh-token',
+      //     null,
+      //     {
+      //       withCredentials: true,
+      //     }
+      //   )
 
-        console.log('New access token response: ', data)
-        accessToken = data.accessToken
-      }
+      //   console.log('New access token response: ', data)
+      //   accessToken = data.accessToken
+      // }
 
       if (!accessToken) {
-        throw new Error('Failed to obtain access token')
+        throw new Error('Failed to obtain token')
       }
 
       const { data } = await axios.get<{
@@ -96,6 +95,10 @@ export const me = createAsyncThunk(
       })
 
       console.log('Data in me thunk:\n', data)
+      if (!data.tokenValid) {
+        throw new Error('Token is invalid')
+      }
+
       return data
     } catch (error) {
       if (error instanceof Error) {

@@ -57,8 +57,5 @@ export async function encryptAndSendData(
   publicKeyPem: string
 ): Promise<string> {
   const publicKey = await importPublicKey(publicKeyPem)
-  console.log('Public key in encryption util\n:', publicKey)
-  const encryptedData = await encryptDataWithPublicKey(plainText, publicKey)
-  console.log('Encrypted data in encryption util\n:', encryptedData)
   return await encryptDataWithPublicKey(plainText, publicKey)
 }
