@@ -1,15 +1,17 @@
+import CompanyFilterComponent from '@/components/Dropdown/CompanyFilterDropdown'
+import SelectedJobModal from '@/components/Modal/SelectedJobModal'
+import Search from '@/components/Search'
+import SinglePostingRow from '@/components/Table/SinglePostingRow'
+import { SelectedJob } from '@/interface/IJobs'
+import { useAppSelector } from '@/redux/store'
+import { LoadingSpinner } from '@/ui'
+import { SingleJobPostingSkeletonRow } from '@/ui/JobPostingSkeleton'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import fetchJobs, { fetchTodayJobs, fetchTodaysCompanies } from '../api/jobsAPI'
-import CompanyFilterComponent from '../components/Dropdown/CompanyFilterDropdown'
-import SelectedJobModal from '../components/Modal/SelectedJobModal'
-import Search from '../components/Search'
-import SinglePostingRow from '../components/Table/SinglePostingRow'
 import { JobSourceEnum } from '../constants'
-import { LoadingSpinner } from '../ui'
-import { SingleJobPostingSkeletonRow } from '../ui/JobPostingSkeleton'
 
 interface TodayCompany {
   id: number
@@ -32,7 +34,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
-  const [selectedJob, setSelectedJob] = useState<any | null>(null)
+  const [selectedJob, setSelectedJob] = useState<SelectedJob | null>(null)
   const [totalPages, setTotalPages] = useState(1)
   const [currentPage, setCurrentPage] = useState(1)
   const [companies, setCompanies] = useState<CompanyData>({
@@ -42,6 +44,11 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const [todayCompanySelect, setTodayCompanySelect] = useState<string | null>(
     null
   )
+
+  console.log('SELECTED JOB\n', selectedJob)
+
+  const auth = useAppSelector((state) => state.auth)
+  const token = auth.data?.token ?? ''
 
   useEffect(() => {
     const getJobs = async () => {
@@ -55,14 +62,15 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
           jobsData = await fetchTodayJobs(
             currentPage,
             searchQuery,
+            token,
             todayCompanySelect ? Number(todayCompanySelect) : undefined
           )
           if (companies.companies?.length === 0) {
-            companiesData = await fetchTodaysCompanies()
+            companiesData = await fetchTodaysCompanies(token)
             setCompanies(companiesData)
           }
         } else if (company && !isTodaysJobs) {
-          jobsData = await fetchJobs(company, currentPage, searchQuery)
+          jobsData = await fetchJobs(company, currentPage, searchQuery, token)
         }
         if (!jobsData) {
           setIsError(true)
@@ -131,16 +139,15 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
 
       const response = await axios.get(
         'http://localhost:8000/v1/api/jobs/workday/individualJob',
-        { params: { fullBackendUrl } }
+        {
+          params: { fullBackendUrl },
+          headers: { Authorization: `Bearer ${token}` },
+        }
       )
       setSelectedJob(response.data)
       console.log('make api call to get job details from workday')
     } else {
-      console.error(
-        `No job details found for ${job.title} in ${company}...no ${{
-          ...Object.values(JobSourceEnum),
-        }}`
-      )
+      console.error(`No job details found for ${job.title} in ${company}...`)
     }
     setUrl(job.absoluteUrl)
   }
@@ -172,7 +179,7 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       selectedCompanyId ? selectedCompanyId.toString() : null
     )
   }
-  console.log({ isLoading, isError })
+  console.log({ isLoading, isError, isTodaysJobs })
   return (
     <div className="w-full px-4">
       <h2 className="flex items-center justify-center text-center text-2xl font-semibold">

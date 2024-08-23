@@ -1,4 +1,7 @@
-const fetchWorkdayLocations = async (company: string): Promise<any> => {
+const fetchWorkdayLocations = async (
+  company: string,
+  token: string
+): Promise<any> => {
   try {
     const response = await fetch(
       `http://localhost:8000/v1/api/locations/${company}`,
@@ -7,6 +10,7 @@ const fetchWorkdayLocations = async (company: string): Promise<any> => {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       }
     )

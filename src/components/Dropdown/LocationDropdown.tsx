@@ -1,5 +1,6 @@
 // LocationDropdown.js
 
+import { LocationDropdownProps } from '@/interface/ILocationDropdown'
 import { useState } from 'react'
 
 const LocationDropdown = ({
