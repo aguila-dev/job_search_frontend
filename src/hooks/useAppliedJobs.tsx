@@ -1,3 +1,4 @@
+import { AppliedJobs, JobData } from '@/interface/IJobs'
 import { useEffect, useState } from 'react'
 
 type JobIdExtractor = (job: JobData) => string

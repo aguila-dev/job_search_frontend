@@ -28,6 +28,7 @@ const fetchWorkdayAPI = async (
   limit: string | number = 20,
   offset: string | number = 0,
   searchText: string = '',
+  token: string,
   selectedLocations?: any
 ): Promise<any> => {
   try {
@@ -48,6 +49,7 @@ const fetchWorkdayAPI = async (
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     })
 

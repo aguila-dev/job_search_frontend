@@ -1,31 +1,22 @@
 import { loginOrSignup } from '@/api/auth'
-import { AuthState, UserState } from '@/redux/interfaces'
+import { AuthReduxState, AuthUserProps, UserState } from '@/interface/redux'
+import { RootState } from '@/redux/store'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-import { RootState } from '../store'
-
 axios.defaults.withCredentials = true
 
-const initialState: AuthState = {
+const initialState: AuthReduxState = {
   data: null,
   loading: false,
   error: null,
 }
 
-interface AuthenticateProps {
-  email: string
-  password: string
-  method: string
-  firstName?: string
-  lastName?: string
-}
-
 export const authenticateUser = createAsyncThunk(
   'auth/authenticate',
   async (
-    { email, password, method, firstName, lastName }: AuthenticateProps,
+    { email, password, method, firstName, lastName }: AuthUserProps,
     { rejectWithValue, dispatch }
   ) => {
     try {

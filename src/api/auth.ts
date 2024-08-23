@@ -1,7 +1,6 @@
+import { AuthResponse } from '@/interface/redux'
 import { encryptAndSendData } from '@/utils/encryption'
 import axios, { AxiosResponse, isAxiosError } from 'axios'
-
-type AuthResponse = { accessToken: string }
 
 export const loginOrSignup = async (
   email: string,
