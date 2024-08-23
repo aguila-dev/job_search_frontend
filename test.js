@@ -1,3 +1,11 @@
+import { jwtDecode } from 'jwt-decode'
+
+console.log(
+  jwtDecode(
+    'eyJhbGciOiJSUzI1NiIsImtpZCI6ImQ0MjY5YTE3MzBlNTA3MTllNmIxNjA2ZTQyYzNhYjMyYjEyODA0NDkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiTmljayBBZ3VpbGEiLCJwaWN0dXJlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9hZ3VpbGEtcGVyZm9ybWFuY2UtdjItcHJvZC5hcHBzcG90LmNvbS9vL3Byb2ZpbGVQaWN0dXJlcyUyRlFUU0libzBWaTZVdW91bGdmRlFqRXNvcU5jazIlMkZuaWNrLWFndWlsYS5qcGc_YWx0PW1lZGlhJnRva2VuPTUyZDJhYmY3LTY5OGEtNDg3ZC1hN2Q2LWQwY2VlMGQ2NjY3ZSIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9hZ3VpbGEtcGVyZm9ybWFuY2UtdjItcHJvZCIsImF1ZCI6ImFndWlsYS1wZXJmb3JtYW5jZS12Mi1wcm9kIiwiYXV0aF90aW1lIjoxNzI0NDI2NTg1LCJ1c2VyX2lkIjoiUVRTSWJvMFZpNlV1b3VsZ2ZGUWpFc29xTmNrMiIsInN1YiI6IlFUU0libzBWaTZVdW91bGdmRlFqRXNvcU5jazIiLCJpYXQiOjE3MjQ0MjY1ODUsImV4cCI6MTcyNDQzMDE4NSwiZW1haWwiOiJuaWNrQGFndWlsYXBlcmZvcm1hbmNlLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIm5pY2tAYWd1aWxhcGVyZm9ybWFuY2UuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.PPlKIZLhCi-PVtkBLJAXIb5B6LncXZc1aijqSvCSTjDkxYo0NXXGlLX1hPUEq50rgQkm0Oh0iIkXVbEeh4iOEszXj7uDuiEV5FsZfciFupPoh-fxUwI-bCIWVFbvMFQVsrNo3ZH7BZo_UENlPxgMBfyatuAZ3xLP-fuho4VwJPWqWpM6P5olSOzfTcvmP7Y2H9qOdoDOGfWC0J2Qn5VNY8uMtVWB9_bWdy0fRjPlDwH2_i8g7J9yOSQXhG_vAO-opSKq3OBl5Zw_f19VpI2QtZp6TfBZWf2-e3xUuVpnuiMRGBfoaXLfC-mSbrfZUdPY7sToo08SIzmRBuScI3IOqg'
+  )
+)
+
 const usaData = {
   AL: {
     state: 'Alabama',
@@ -20161,12 +20169,12 @@ export const isLocationInUS = (location) => {
   )
 }
 
-console.log(isLocationInUS('Long Beach, CA'))
-// Test cases
-console.log(isLocationInUS('Baltimore, MD or Remote')) // true
-console.log(isLocationInUS('San Francisco, CA')) // true
-console.log(isLocationInUS('New York, NY')) // true
-console.log(isLocationInUS('Denver, Colorado')) // true
-console.log(isLocationInUS('Toronto')) // false
-console.log(isLocationInUS('Vancouver, BC')) // false
-console.log(isLocationInUS('Berlin, DE')) // false
+// console.log(isLocationInUS('Long Beach, CA'))
+// // Test cases
+// console.log(isLocationInUS('Baltimore, MD or Remote')) // true
+// console.log(isLocationInUS('San Francisco, CA')) // true
+// console.log(isLocationInUS('New York, NY')) // true
+// console.log(isLocationInUS('Denver, Colorado')) // true
+// console.log(isLocationInUS('Toronto')) // false
+// console.log(isLocationInUS('Vancouver, BC')) // false
+// console.log(isLocationInUS('Berlin, DE')) // false

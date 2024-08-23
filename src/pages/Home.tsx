@@ -1,5 +1,6 @@
 // src/components/CompanyComponent.js
 
+import { useAppSelector } from '@/redux/store'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -12,9 +13,12 @@ import { SkeletonCardLoader } from '../ui/JobPostingSkeleton'
 const Home = () => {
   const [companyList, setCompanyList] = useState<[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const { data } = useAppSelector((state) => state.auth)
   const navigate = useNavigate()
 
-  const handleCompanyClick = async (company: any) => {
+  const token = data?.token
+
+  const handleCompanyClick = (company: any) => {
     navigate(`/jobs/${company.slug}`)
     console.log('COMPANY CLICKED', company)
   }
@@ -24,7 +28,11 @@ const Home = () => {
     setIsLoading(true)
     const fetchCompanyList = async () => {
       try {
-        const { data } = await axios.get(`${API.BASE_URL}${API.COMPANIES}`)
+        const { data } = await axios.get(`${API.BASE_URL}${API.COMPANIES}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
         setCompanyList(data)
       } catch (error) {
         console.error('Error fetching company list:', error)
