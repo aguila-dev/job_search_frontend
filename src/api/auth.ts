@@ -13,8 +13,13 @@ export const loginOrSignup = async (
   try {
     // Fetch the server's public key (this should ideally be cached or handled securely)
     const publicKeyResponse = await axios.get(
-      'http://localhost:8000/v1/api/public-key'
+      'http://localhost:8000/v1/api/public-key',
+      { timeout: 5000 }
     )
+
+    if (!publicKeyResponse.data) {
+      throw new Error('Public key not found')
+    }
 
     const publicKeyPem = publicKeyResponse.data as string
 
@@ -43,14 +48,12 @@ export const loginOrSignup = async (
       console.error('Axios error:', error.response?.status, error.message)
       if (error.response) {
         // The server responded with a status code outside the range of 2xx
-        console.error('Response data:', error.response.data)
-        throw new Error(
-          `Error ${error.response.status}: ${error.response.data || error.message}`
-        )
+        console.error('Response data:', error.response)
+        throw new Error(`${error.response.data.message || error.response.data}`)
       } else if (error.request) {
         // The request was made but no response was received
         console.error('No response received:', error.request)
-        throw new Error('No response from server. Please try again later.')
+        throw new Error('Please try again later.')
       } else {
         // Something happened in setting up the request that triggered an error
         console.error('Request setup error:', error.message)
