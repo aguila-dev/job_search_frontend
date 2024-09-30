@@ -141,6 +141,7 @@ export interface WorkdayJobPostingInfo {
   jobPostingSiteId: string
   jobReqId: string
   jobRequisitionLocation: WorkdayJobRequisitionLocation
+  bulletFields: string[]
   location: string
   posted: boolean
   postedOn: string

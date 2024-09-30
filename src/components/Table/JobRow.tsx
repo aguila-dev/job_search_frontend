@@ -31,6 +31,12 @@ const JobRow: React.FC<JobRowProps> = ({
   } = job
 
   const date = new Date()
+
+  const applicationDate =
+    job.applicationDate instanceof Date
+      ? job.applicationDate.toISOString().split('T')[0]
+      : job.applicationDate || date.toISOString().split('T')[0]
+
   return (
     <tr>
       <td className="border p-2">{company.name}</td>
@@ -49,7 +55,7 @@ const JobRow: React.FC<JobRowProps> = ({
         <input
           title="Applied Date"
           type="date"
-          value={job.applicationDate || date}
+          value={applicationDate}
           onChange={(e) =>
             handleAppliedDateChange(company.name, id, e.target.value)
           }

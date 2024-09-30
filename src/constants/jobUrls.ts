@@ -1,4 +1,6 @@
 const link = 'https://boards-api.greenhouse.io/v1/boards'
+import { JobData } from '@/interface/IJobs'
+
 import AIRBNB_LOGO from '../assets/logos/airbnb.svg'
 console.log(AIRBNB_LOGO)
 

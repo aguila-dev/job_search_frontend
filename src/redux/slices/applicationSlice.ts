@@ -34,7 +34,7 @@ export const fetchApplications = createAsyncThunk(
       )
       console.log('Response from fetchApplications:', response.data)
       return response.data
-    } catch (error) {
+    } catch (error: any) {
       return error.response.data
     }
   }
@@ -68,7 +68,7 @@ export const applyForJob = createAsyncThunk(
       )
       console.log('Response from applyForJob:', response.data)
       return response.data
-    } catch (error) {
+    } catch (error: any) {
       return error.response.data
     }
   }
