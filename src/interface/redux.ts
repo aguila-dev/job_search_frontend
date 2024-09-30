@@ -1,3 +1,5 @@
+import { UserAppliedJobs } from './IJobs'
+
 export type AuthResponse = { accessToken: string }
 
 export interface AuthUserProps {
@@ -24,4 +26,17 @@ export interface AuthReduxState {
   data: AuthTokenState | null
   loading: boolean
   error: string | null
+}
+
+interface ApplicationSliceStateData {
+  count: number
+  jobs: UserAppliedJobs[]
+  page: number
+  totalPages: number
+}
+
+export interface ApplicationsReduxState {
+  loading: boolean
+  error: string | null
+  data: ApplicationSliceStateData | null
 }

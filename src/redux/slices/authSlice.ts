@@ -1,8 +1,8 @@
 import { loginOrSignup } from '@/api/auth'
 import { AuthReduxState, AuthUserProps, UserState } from '@/interface/redux'
-import { RootState } from '@/redux/store'
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import axios from 'axios'
+import Cookies from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
 
 axios.defaults.withCredentials = true
@@ -37,7 +37,7 @@ export const authenticateUser = createAsyncThunk(
         response,
         accessToken
       )
-      dispatch(me())
+      await dispatch(me())
       return { accessToken }
     } catch (error) {
       if (error instanceof Error) {
@@ -51,12 +51,13 @@ export const authenticateUser = createAsyncThunk(
 
 export const me = createAsyncThunk(
   'auth/me',
-  async (_, { rejectWithValue, getState, dispatch }) => {
-    const state = getState() as RootState
-    let accessToken = state.auth.data?.token
+  async (_, { rejectWithValue, dispatch }) => {
+    // const state = getState() as RootState
+    // let accessToken = state.auth.data?.token
+    let accessToken = Cookies.get('_jAt')
 
     console.log('Access token in me thunk:', accessToken)
-    console.log('STATE in me thunk:', state)
+    // console.log('STATE in me thunk:', state)
 
     try {
       if (!accessToken) {
@@ -67,10 +68,12 @@ export const me = createAsyncThunk(
           | undefined
         if (refreshedAccessToken) {
           accessToken = refreshedAccessToken
+          Cookies.set('_jAt', accessToken)
         }
       } else {
         throw new Error('Unable to refresh access token')
       }
+
       const { data } = await axios.get<{
         tokenValid: boolean
         accessToken: string
@@ -122,6 +125,7 @@ export const logout = createAsyncThunk(
         withCredentials: true,
       })
       dispatch(logoutCurrentUser())
+      Cookies.remove('_jAt')
       window.location.href = '/auth'
     } catch (error) {
       console.error('Error logging out:', error)

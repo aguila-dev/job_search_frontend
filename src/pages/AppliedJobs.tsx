@@ -1,4 +1,9 @@
-import { Job, JobTableProps } from '@/interface/IJobs'
+import {
+  ApplicationStatus,
+  JobTableProps,
+  UserAppliedJobs,
+} from '@/interface/IJobs'
+import { useAppSelector } from '@/redux/store'
 import { useEffect, useState } from 'react'
 
 import Search from '../components/Search'
@@ -31,9 +36,9 @@ const JobTable: React.FC<JobTableProps> = ({
       </tr>
     </thead>
     <tbody>
-      {jobs.map((job: any, index: number) => (
+      {jobs.map((job: UserAppliedJobs, index: number) => (
         <JobRow
-          key={job.id + index}
+          key={job.id + '-' + index}
           job={job}
           handleAppliedDateChange={handleAppliedDateChange}
           handleStatusChange={handleStatusChange}
@@ -46,7 +51,7 @@ const JobTable: React.FC<JobTableProps> = ({
 
 // Main Component
 const AppliedJobsComponent: React.FC = () => {
-  const [appliedJobs, setAppliedJobs] = useState<Job[]>([])
+  const [appliedJobs, setAppliedJobs] = useState<UserAppliedJobs[]>([])
   const [sortOrder, setSortOrder] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [selectedTab, setSelectedTab] = useState<string>('tracking')
@@ -54,31 +59,28 @@ const AppliedJobsComponent: React.FC = () => {
     'asc' | 'desc'
   >('desc')
 
+  const { data } = useAppSelector((state) => state.applications)
+
   useEffect(() => {
-    const allAppliedJobs = JSON.parse(
-      localStorage.getItem('appliedJobs') || '{}'
-    )
-    const jobsList = Object.entries(allAppliedJobs).flatMap(
-      ([companyName, companyJobs]: [string, any]) =>
-        Object.values(companyJobs).map((job: any) => ({
-          ...job,
-          company: companyName,
-        }))
-    )
+    const jobsList = data?.jobs ? data.jobs : []
     setAppliedJobs(jobsList)
   }, [])
 
   const filteredJobs = appliedJobs.filter(
-    (job) =>
-      job?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job?.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (job?.location?.name &&
-        job.location.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    (appliedJob) =>
+      appliedJob.job?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appliedJob.job?.company.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      (appliedJob.job?.location &&
+        appliedJob.job.location
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()))
   )
 
   const sortedAndFilteredJobs = filteredJobs.sort((a, b) => {
-    const dateA = new Date(a?.updated_at).getTime()
-    const dateB = new Date(b?.updated_at).getTime()
+    const dateA = new Date(a?.updatedAt).getTime()
+    const dateB = new Date(b?.updatedAt).getTime()
 
     const appliedDateSortOrderMultiplier =
       appliedDateSortOrder === 'asc' ? 1 : -1
@@ -88,24 +90,26 @@ const AppliedJobsComponent: React.FC = () => {
     } else if (sortOrder === 'oldest') {
       return dateA - dateB
     } else if (sortOrder === 'appliedDate') {
-      if (a.appliedDate && b.appliedDate) {
+      if (a.applicationDate && b.applicationDate) {
         return (
           appliedDateSortOrderMultiplier *
-          (new Date(a.appliedDate).getTime() -
-            new Date(b.appliedDate).getTime())
+          (new Date(a.applicationDate).getTime() -
+            new Date(b.applicationDate).getTime())
         )
-      } else if (a.appliedDate) {
+      } else if (a.applicationDate) {
         return -1
-      } else if (b.appliedDate) {
+      } else if (b.applicationDate) {
         return 1
       }
     }
     return 0
   })
 
-  const trackingJobs = sortedAndFilteredJobs.filter((job) => job.considering)
+  const trackingJobs = sortedAndFilteredJobs.filter(
+    (job) => !job.noLongerConsidering
+  )
   const noLongerConsideringJobs = sortedAndFilteredJobs.filter(
-    (job) => !job.considering
+    (job) => job.noLongerConsidering
   )
 
   const handleAppliedDateChange = (
@@ -115,10 +119,10 @@ const AppliedJobsComponent: React.FC = () => {
   ) => {
     updateJobProperty(company, jobId, 'appliedDate', newDate)
     setAppliedJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.company === company && job.id === jobId
-          ? { ...job, appliedDate: newDate }
-          : job
+      prevJobs.map((appliedJob) =>
+        appliedJob.job.company.name === company && appliedJob.job.id === jobId
+          ? { ...appliedJob, applicationDate: newDate }
+          : appliedJob
       )
     )
   }
@@ -126,12 +130,14 @@ const AppliedJobsComponent: React.FC = () => {
   const handleStatusChange = (
     company: string,
     jobId: number,
-    status: string
+    status: ApplicationStatus
   ) => {
     updateJobProperty(company, jobId, 'status', status)
     setAppliedJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.company === company && job.id === jobId ? { ...job, status } : job
+      prevJobs.map((appliedJob) =>
+        appliedJob.job.company.name === company && appliedJob.job.id === jobId
+          ? { ...appliedJob, status }
+          : appliedJob
       )
     )
   }
@@ -143,10 +149,10 @@ const AppliedJobsComponent: React.FC = () => {
   ) => {
     updateJobProperty(company, jobId, 'considering', considering)
     setAppliedJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.company === company && job.id === jobId
-          ? { ...job, considering }
-          : job
+      prevJobs.map((appliedJob) =>
+        appliedJob.job.company.name === company && appliedJob.job.id === jobId
+          ? { ...appliedJob, noLongerConsidering: !considering }
+          : appliedJob
       )
     )
   }

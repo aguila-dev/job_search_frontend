@@ -1,6 +1,7 @@
 // src/components/CompanyComponent.js
 
-import { useAppSelector } from '@/redux/store'
+import { fetchApplications } from '@/redux/slices/applicationSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -10,11 +11,31 @@ import Search from '../components/Search'
 import { API } from '../constants'
 import { SkeletonCardLoader } from '../ui/JobPostingSkeleton'
 
+interface JobSource {
+  createdAt: string
+  id: number
+  name: string
+  updatedAt: string
+}
+interface CompanyInfo {
+  active: boolean
+  apiEndpoint: string
+  createdAt: string
+  frontendUrl: string
+  id: number
+  jobSource: JobSource
+  jobSourceId: number
+  name: string
+  slug: string
+  updatedAt: string
+}
+
 const Home = () => {
-  const [companyList, setCompanyList] = useState<[]>([])
+  const [companyList, setCompanyList] = useState<CompanyInfo[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const { data } = useAppSelector((state) => state.auth)
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
 
   const token = data?.token
 
@@ -28,11 +49,15 @@ const Home = () => {
     setIsLoading(true)
     const fetchCompanyList = async () => {
       try {
-        const { data } = await axios.get(`${API.BASE_URL}${API.COMPANIES}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        const { data } = await axios.get<CompanyInfo[]>(
+          `${API.BASE_URL}${API.COMPANIES}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        console.log('Company list:', data)
         setCompanyList(data)
       } catch (error) {
         console.error('Error fetching company list:', error)
@@ -41,6 +66,17 @@ const Home = () => {
     fetchCompanyList()
     setIsLoading(false)
   }, [])
+
+  // fetch all applications by dispatching fetchApplications thunk
+  useEffect(() => {
+    const userId = data?.auth?.id
+    if (!userId) {
+      console.error('User not logged in')
+      return
+    }
+    console.log('Fetching applications for user:', userId)
+    dispatch(fetchApplications(userId))
+  }, [data])
 
   const handleSearchSubmit = async (query: string) => {
     console.log('Searching for companies with query:', query)

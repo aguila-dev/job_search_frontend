@@ -1,4 +1,4 @@
-import { JobRowProps } from '@/interface/IJobs'
+import { ApplicationStatus, JobRowProps } from '@/interface/IJobs'
 import { useState } from 'react'
 
 // JobRow Component
@@ -9,42 +9,49 @@ const JobRow: React.FC<JobRowProps> = ({
   handleJobConsideration,
 }) => {
   const [consideringStatus, setConsideringStatus] = useState<boolean>(
-    job.considering ?? true
+    job.noLongerConsidering ?? true
   )
-  const [status, setStatus] = useState<string>(job.status || 'active')
+  const [status, setStatus] = useState<ApplicationStatus>(
+    job.status || ApplicationStatus.ACTIVE
+  )
   const handleStatusChangeLocal = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newStatus = e.target.value
+    const newStatus = e.target.value as ApplicationStatus
     setStatus(newStatus)
-    handleStatusChange(job.company, job.id, newStatus)
+    handleStatusChange(job.job.company.name, job.job.id, newStatus)
   }
 
   const handleConsiderationChange = () => {
     const newConsideringStatus = !consideringStatus
     setConsideringStatus(newConsideringStatus)
-    handleJobConsideration(job.company, job.id, newConsideringStatus)
+    handleJobConsideration(job.job.company.name, job.id, newConsideringStatus)
   }
 
+  const {
+    job: { company, id, title, location, absolute_url },
+  } = job
+
+  const date = new Date()
   return (
     <tr>
-      <td className="border p-2">{job.company}</td>
+      <td className="border p-2">{company.name}</td>
       <td className="border p-2">
         <a
-          href={job.absolute_url || job.externalPath}
+          href={absolute_url}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 underline"
         >
-          {job.title}
+          {title}
         </a>
       </td>
-      <td className="border p-2">{job.location?.name || job.locationsText}</td>
+      <td className="border p-2">{location || ''}</td>
       <td className="border p-2">
         <input
           title="Applied Date"
           type="date"
-          value={job.appliedDate || ''}
+          value={job.applicationDate || date}
           onChange={(e) =>
-            handleAppliedDateChange(job.company, job.id, e.target.value)
+            handleAppliedDateChange(company.name, id, e.target.value)
           }
           className="w-full rounded border px-2 py-1"
         />
@@ -63,10 +70,10 @@ const JobRow: React.FC<JobRowProps> = ({
           onChange={handleStatusChangeLocal}
           value={status}
         >
-          <option value="active">Active</option>
-          <option value="pending">Pending</option>
-          <option value="rejected">Rejected</option>
-          <option value="interviewing">Interviewing</option>
+          <option value={ApplicationStatus.ACTIVE}>Active</option>
+          <option value={ApplicationStatus.PENDING}>Pending</option>
+          <option value={ApplicationStatus.REJECTED}>Rejected</option>
+          <option value={ApplicationStatus.INTERVIEW}>Interviewing</option>
         </select>
       </td>
       <td className="border p-2 text-center">

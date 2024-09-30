@@ -1,7 +1,11 @@
 // // import { format } from 'date-fns';
 // import { formatInTimeZone } from 'date-fns-tz';
+
+import { applyForJob } from '@/redux/slices/applicationSlice'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 import cn from 'classnames'
 // Single posting component (table row)
+
 const SinglePostingRow: React.FC<{
   job: any
   onRowClick?: () => void
@@ -9,6 +13,9 @@ const SinglePostingRow: React.FC<{
   baseUrl?: string
   workday?: boolean
 }> = ({ job, onRowClick }) => {
+  const dispatch = useAppDispatch()
+  const { data } = useAppSelector((state) => state.auth)
+
   const formatDateToLocalTimeZone = (dateString: string) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat('en-US', {
@@ -21,6 +28,16 @@ const SinglePostingRow: React.FC<{
   const formattedDate = formatDateToLocalTimeZone(job.lastUpdatedAt)
   const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
     e.stopPropagation()
+    // need to post this to applied jobs endpoint
+    // /v1/api/jobs/active ==> userId and jobId
+    console.log(`Checkbox clicked on job id: ${job.id}`)
+    const userId = data?.auth?.id
+    const jobId = job.id
+    if (!userId) {
+      console.error('User not logged in')
+      return
+    }
+    dispatch(applyForJob({ jobId, userId }))
   }
   return (
     <tr
