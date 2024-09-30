@@ -14,6 +14,47 @@ export interface AppliedJobs {
   [key: string]: JobData
 }
 
+export interface BackendJobData {
+  id: number
+  companyId: number
+  company: {
+    name: string
+  }
+  jobSourceId: number
+  jobId: string
+  title: string
+  // absoluteUrl: string
+  absolute_url: string
+  location: string
+  requisitionId: string
+  dataCompliance: any
+  metadata: any
+  lastUpdatedAt: string | Date
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+
+export enum ApplicationStatus {
+  ACTIVE = 'active',
+  INTERVIEW = 'interview',
+  OFFER = 'offer',
+  REJECTED = 'rejected',
+  WITHDRAWN = 'withdrawn',
+  PENDING = 'pending',
+}
+export interface UserAppliedJobs {
+  id: number
+  userId: number
+  jobId: number
+  notes: string | null
+  status: ApplicationStatus | null
+  applicationDate: Date | string | null
+  noLongerConsidering: boolean
+  createdAt: Date
+  updatedAt: Date
+  job: BackendJobData
+}
+
 export interface Job {
   company: string
   title: string
@@ -28,13 +69,17 @@ export interface Job {
   status?: string
 }
 export interface JobRowProps {
-  job: Job
+  job: UserAppliedJobs
   handleAppliedDateChange: (
     company: string,
     jobId: number,
     newDate: string
   ) => void
-  handleStatusChange: (company: string, jobId: number, status: string) => void
+  handleStatusChange: (
+    company: string,
+    jobId: number,
+    status: ApplicationStatus
+  ) => void
   handleJobConsideration: (
     company: string,
     jobId: number,
@@ -43,13 +88,17 @@ export interface JobRowProps {
 }
 // Define Props for the JobTable Component
 export interface JobTableProps {
-  jobs: Job[]
+  jobs: UserAppliedJobs[]
   handleAppliedDateChange: (
     company: string,
     jobId: number,
     newDate: string
   ) => void
-  handleStatusChange: (company: string, jobId: number, status: string) => void
+  handleStatusChange: (
+    company: string,
+    jobId: number,
+    status: ApplicationStatus
+  ) => void
   handleJobConsideration: (
     company: string,
     jobId: number,
@@ -92,6 +141,7 @@ export interface WorkdayJobPostingInfo {
   jobPostingSiteId: string
   jobReqId: string
   jobRequisitionLocation: WorkdayJobRequisitionLocation
+  bulletFields: string[]
   location: string
   posted: boolean
   postedOn: string
