@@ -70,12 +70,5 @@
     "tsc-files": "^1.1.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "sh -c 'tsc-files --noEmit $(find ./src -name *.d.ts ! -path \"./src/.*/*\") $0 $@'",
-      "prettier --write"
-    ]
   }
 }
