@@ -4,7 +4,6 @@ import ProtectedLayout from '@/layouts/ProtectedLayout'
 import AllJobPostingsComponent from '@/pages/AllJobPostingsComponent'
 import AppliedJobsComponent from '@/pages/AppliedJobs'
 import Callback from '@/pages/Callback'
-import Form from '@/pages/Form'
 import Home from '@/pages/Home'
 import { me } from '@/redux/slices/authSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
@@ -82,18 +81,6 @@ const AppRoutes = () => {
           }
         />
       </Route>
-      <Route
-        path="/test/form/don-quixote"
-        element={
-          <ProtectedLayout>
-            <Form />
-            {/* <div>
-              <h1>Form</h1>
-            </div> */}
-          </ProtectedLayout>
-        }
-      />
-
       <Route path="/*" element={<div> Error 404</div>} />
     </Routes>
   )
