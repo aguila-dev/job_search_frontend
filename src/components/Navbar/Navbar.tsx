@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { logout } from '../../redux/slices/authSlice'
-import { useAppDispatch, useAppSelector } from '../../redux/store'
+import { useAppSelector } from '../../redux/store'
+import LogoutButton from '../Button/LogoutButton'
 // import NavItem from '../Button/NavItem'
 
 type NavbarLink = {
@@ -17,7 +17,7 @@ interface NavbarProps {
 
 const Navbar = ({ navbarLinks }: NavbarProps) => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+  // const dispatch = useAppDispatch()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { data } = useAppSelector((state) => state.auth)
 
@@ -33,11 +33,11 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
     navigate(path)
   }
 
-  const handleLogout = async () => {
-    // Call logoutCurrentUser action
-    console.log('Logout')
-    await dispatch(logout())
-  }
+  // const handleLogout = async () => {
+  //   // Call logoutCurrentUser action
+  //   // console.log('Logout')
+  //   // await dispatch(logout())
+  // }
 
   return (
     <nav className="dark-green z-50 p-4 font-semibold text-slate-50 md:w-64">
@@ -97,14 +97,15 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
                 )
             )}
         </div>
-        <button
+        <LogoutButton />
+        {/* <button
           type="button"
           onClick={handleLogout}
           // to='/auth'
           className="w-full rounded-lg px-4 py-2 text-center text-black transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-slate-300 hover:bg-opacity-65"
         >
           Logout
-        </button>
+        </button> */}
       </div>
     </nav>
   )
