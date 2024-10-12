@@ -1,7 +1,6 @@
 // src/components/CompanyComponent.js
 
-import { fetchApplications } from '@/redux/slices/applicationSlice'
-import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -30,14 +29,19 @@ interface CompanyInfo {
   updatedAt: string
 }
 
+function isAuth0Error(error: any): error is { error: string } {
+  return error && typeof error.error === 'string'
+}
+
 const Home = () => {
   const [companyList, setCompanyList] = useState<CompanyInfo[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const { data } = useAppSelector((state) => state.auth)
+  // const { data } = useAppSelector((state) => state.auth)
+  // const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
+  const { getAccessTokenSilently, loginWithRedirect } = useAuth0()
 
-  const token = data?.token
+  // const token = data?.token
 
   const handleCompanyClick = (company: any) => {
     navigate(`/jobs/${company.slug}`)
@@ -48,7 +52,17 @@ const Home = () => {
     console.log('Fetching company list...')
     setIsLoading(true)
     const fetchCompanyList = async () => {
+      console.log('Fetching company list...part 2')
       try {
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+            scope: 'openid profile email',
+            prompt: 'consent',
+          },
+        })
+        console.log('Token:', token)
+
         const { data } = await axios.get<CompanyInfo[]>(
           `${API.BASE_URL}${API.COMPANIES}`,
           {
@@ -59,31 +73,49 @@ const Home = () => {
         )
         console.log('Company list:', data)
         setCompanyList(data)
-      } catch (error) {
-        console.error('Error fetching company list:', error)
+      } catch (error: unknown) {
+        if (isAuth0Error(error)) {
+          if (
+            error.error === 'consent_required' ||
+            error.error === 'login_required'
+          ) {
+            loginWithRedirect({
+              authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+                scope: 'openid profile email',
+              },
+            })
+          } else {
+            console.error('Error fetching company list:', error)
+          }
+        } else {
+          console.error('An unknown error occurred:', error)
+        }
       }
     }
     fetchCompanyList()
     setIsLoading(false)
-  }, [])
-
-  // fetch all applications by dispatching fetchApplications thunk
-  useEffect(() => {
-    const userId = data?.auth?.id
-    if (!userId) {
-      console.error('User not logged in')
-      return
-    }
-    console.log('Fetching applications for user:', userId)
-    dispatch(fetchApplications(userId))
-  }, [data])
+  }, [getAccessTokenSilently])
 
   const handleSearchSubmit = async (query: string) => {
     console.log('Searching for companies with query:', query)
     setIsLoading(true)
     try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          scope: 'openid profile email',
+          prompt: 'consent',
+        },
+      })
+      console.log('Token:', token)
       const { data } = await axios.get(
-        `${API.BASE_URL}${API.COMPANIES}?name=${query}`
+        `${API.BASE_URL}${API.COMPANIES}?name=${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       )
       setCompanyList(data)
     } catch (error) {

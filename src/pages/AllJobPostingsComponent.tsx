@@ -3,9 +3,9 @@ import SelectedJobModal from '@/components/Modal/SelectedJobModal'
 import Search from '@/components/Search'
 import SinglePostingRow from '@/components/Table/SinglePostingRow'
 import { SelectedJob } from '@/interface/IJobs'
-import { useAppSelector } from '@/redux/store'
 import { LoadingSpinner } from '@/ui'
 import { SingleJobPostingSkeletonRow } from '@/ui/JobPostingSkeleton'
+import { useAuth0 } from '@auth0/auth0-react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -44,11 +44,8 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
   const [todayCompanySelect, setTodayCompanySelect] = useState<string | null>(
     null
   )
-
+  const { getAccessTokenSilently } = useAuth0()
   console.log('SELECTED JOB\n', selectedJob)
-
-  const auth = useAppSelector((state) => state.auth)
-  const token = auth.data?.token ?? ''
 
   useEffect(() => {
     const getJobs = async () => {
@@ -56,6 +53,13 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
       setIsError(false)
 
       try {
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+            scope: 'openid profile email',
+            prompt: 'consent',
+          },
+        })
         let jobsData
         let companiesData = companies
         if (isTodaysJobs) {
@@ -112,6 +116,13 @@ const AllJobPostingsComponent = ({ isTodaysJobs = false }: Props) => {
 
   const fetchJobDetails = async (job: any) => {
     const jobCompany = company || job.company.slug
+    const token = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        scope: 'openid profile email',
+        prompt: 'consent',
+      },
+    })
     if (
       jobCompany &&
       job.jobId &&
