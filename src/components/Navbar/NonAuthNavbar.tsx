@@ -32,18 +32,11 @@ const NonAuthNavbar: React.FC = () => {
         ) : (
           <>
             {isAuthenticated && (
-              <>
-                <li>
-                  <NavLink to="/profile" className="text-white">
-                    Profile
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/jobs" className="text-white">
-                    Jobs
-                  </NavLink>
-                </li>
-              </>
+              <li>
+                <NavLink to="/profile" className="text-white">
+                  Profile
+                </NavLink>
+              </li>
             )}
             <li>{isAuthenticated ? <LogoutButton /> : <LoginButton />}</li>
           </>

@@ -1,7 +1,7 @@
 export const NAVBAR_LINKS = [
   {
     name: 'Home',
-    path: '/',
+    path: '/profile',
     active: true,
     requiresAuth: true,
   },

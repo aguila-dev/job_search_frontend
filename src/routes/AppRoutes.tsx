@@ -1,7 +1,9 @@
 import HomeLayout from '@/layouts/HomeLayout'
 import ProtectedLayout from '@/layouts/ProtectedLayout'
+import About from '@/pages/About'
 import AllJobPostingsComponent from '@/pages/AllJobPostingsComponent'
 import AppliedJobsComponent from '@/pages/AppliedJobs'
+import Contact from '@/pages/Contact'
 import Home from '@/pages/Home'
 import NonAuthHome from '@/pages/NonAuthHome'
 import { useAuth0 } from '@auth0/auth0-react'
@@ -78,26 +80,27 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      {/* {isAuthenticated ? (
-        <Route path="/auth" element={<Navigate to="/" replace />} />
-      ) : (
-        <>
-          <Route
-            path="/auth"
-            element={
-              <AuthLayout>
-                <AuthComponent />
-              </AuthLayout>
-            }
-          />
-          <Route path="/callback" element={<Callback />} />
-        </>
-      )} */}
       <Route
         path="/"
         element={
           <HomeLayout>
             <NonAuthHome />
+          </HomeLayout>
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <HomeLayout>
+            <Contact />
+          </HomeLayout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <HomeLayout>
+            <About />
           </HomeLayout>
         }
       />

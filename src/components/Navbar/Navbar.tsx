@@ -1,7 +1,7 @@
+import { useAuth0 } from '@auth0/auth0-react'
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 
-import { useAppSelector } from '../../redux/store'
 import LogoutButton from '../Button/LogoutButton'
 // import NavItem from '../Button/NavItem'
 
@@ -19,7 +19,7 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
   const navigate = useNavigate()
   // const dispatch = useAppDispatch()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { data } = useAppSelector((state) => state.auth)
+  const { user } = useAuth0()
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -32,12 +32,6 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
     document.body.style.overflow = 'auto'
     navigate(path)
   }
-
-  // const handleLogout = async () => {
-  //   // Call logoutCurrentUser action
-  //   // console.log('Logout')
-  //   // await dispatch(logout())
-  // }
 
   return (
     <nav className="dark-green z-50 p-4 font-semibold text-slate-50 md:w-64">
@@ -58,7 +52,9 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
         } z-40`}
       >
         {navbarLinks
-          .filter((link) => (data?.auth ? link.active : !link.requiresAuth))
+          .filter((link) =>
+            user && user.email ? link.active : !link.requiresAuth
+          )
           .map(
             (link) =>
               link.active && (
@@ -77,7 +73,9 @@ const Navbar = ({ navbarLinks }: NavbarProps) => {
       <div className="hidden h-full flex-1 justify-between md:flex md:flex-col md:gap-4">
         <div className="flex flex-col gap-4">
           {navbarLinks
-            .filter((link) => (data?.auth ? link.active : !link.requiresAuth))
+            .filter((link) =>
+              user && user.email ? link.active : !link.requiresAuth
+            )
             .map(
               (link) =>
                 link.active && (
