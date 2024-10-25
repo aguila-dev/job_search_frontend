@@ -16,7 +16,7 @@ export interface InputTextFieldProps {
 }
 
 const inputClasses =
-  'text-white p-2 rounded-lg h-12 border-2 focus:outline-none focus:border-dark-green'
+  'p-2 rounded-lg h-12 border-2 focus:outline-none focus:border-dark-green'
 
 const AuthInput = ({
   label,
